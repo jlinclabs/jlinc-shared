@@ -1,0 +1,19 @@
+{
+  "name": "jlinc-shared",
+  "private": true,
+  "version": "1.0.0",
+  "description": "A place to store things shared by:",
+  "main": "index.js",
+  "engines": {
+    "node": "^8.11.1",
+    "npm": "^6.2.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jlinclabs/jlinc-shared.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jlinclabs/jlinc-shared/issues"
+  },
+  "homepage": "https://github.com/jlinclabs/jlinc-shared#readme"
+}
