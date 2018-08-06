@@ -12,7 +12,7 @@ module.exports = Object.freeze({
   mailingcity: 'City',
   mailingcountry: 'Country',
   mailingpostalcode: 'Postcode / Zip code',
-  mailingstate: 'Sate / Province',
+  mailingstate: 'State / Province',
   mailingstreet: 'Address',
   mobilephone: 'Mobile Phone Number',
 });
