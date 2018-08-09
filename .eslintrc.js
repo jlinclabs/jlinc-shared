@@ -24,7 +24,7 @@ module.exports = {
     "semi": ["error", "always"],
     "strict": [2, "global"],
     "no-console": "error",
-    "no-unused-vars": 0,
+    "no-unused-vars": "error",
     "space-before-function-paren": "off",
     "object-curly-spacing": "off",
     "comma-dangle": "off",
