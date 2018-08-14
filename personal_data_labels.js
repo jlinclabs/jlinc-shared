@@ -14,5 +14,5 @@ module.exports = Object.freeze({
   homephone: 'Home Phone Number',
   mobilephone: 'Mobile Phone Number',
   faxnumber: 'Fax Number',
-  businessphone: 'Buisness Phone',
+  businessphone: 'Business Phone',
 });
