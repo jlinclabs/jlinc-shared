@@ -24,8 +24,8 @@ module.exports = function mergeAccountData ({changes, accountData}) {
           mergedAccountData[key][communicationChannelKey] = {};
           Object.assign(
             mergedAccountData[key][communicationChannelKey],
-            accountData[key][communicationChannelKey] || {},
-            changes[key][communicationChannelKey] || {},
+            accountData[key] && accountData[key][communicationChannelKey] || {},
+            changes[key] && changes[key][communicationChannelKey] || {},
           );
         }
       });

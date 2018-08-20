@@ -96,6 +96,85 @@ describe('mergeAccountData', function(){
         ),
       });
     });
+
+    context('with no changes in communication_channels and existing communication_channels', function(){
+      expect(mergeAccountData({
+        changes: {
+          shared_personal_data: { lastname: false },
+        },
+        accountData: {
+          shared_personal_data: {
+            email: true,
+            gender: true,
+            lastname: true,
+            birthdate: true,
+            faxnumber: true,
+            firstname: true,
+            homephone: true,
+            mailingcity: true,
+            mobilephone: true,
+            mailingstate: true,
+            businessphone: true,
+            mailingstreet: true,
+            mailingcountry: true,
+            mailingpostalcode: true
+          },
+          personal_data: {
+            email: 'foobarski@booyakahsha.io',
+            firstname: 'foobarski',
+            lastname: 'booyakahsha',
+            homephone: '415-555-5555',
+            mobilephone: '415-555-5556',
+            gender: 'female'
+          },
+          consents: {
+            Membership: false,
+            Fundraising: false,
+            Volunteering: true
+          },
+          communication_channels: {
+            fax_media: { enabled: false },
+            email_media: { enabled: false },
+            postal_mail_media: { enabled: false },
+          },
+        }
+      })).to.deep.equal({
+        personal_data: {
+          email: 'foobarski@booyakahsha.io',
+          firstname: 'foobarski',
+          lastname: 'booyakahsha',
+          homephone: '415-555-5555',
+          mobilephone: '415-555-5556',
+          gender: 'female'
+        },
+        communication_channels: {
+          email_media: { enabled: false },
+          fax_media: { enabled: false },
+          postal_mail_media: { enabled: false }
+        },
+        shared_personal_data: {
+          email: true,
+          lastname: false,
+          firstname: true,
+          birthdate: true,
+          gender: true,
+          mailingcity: true,
+          mailingcountry: true,
+          mailingpostalcode: true,
+          mailingstate: true,
+          mailingstreet: true,
+          homephone: true,
+          mobilephone: true,
+          faxnumber: true,
+          businessphone: true
+        },
+        consents: {
+          Membership: false,
+          Fundraising: false,
+          Volunteering: true
+        }
+      });
+    });
   });
 
 });
