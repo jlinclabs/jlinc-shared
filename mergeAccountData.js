@@ -10,7 +10,7 @@ module.exports = function mergeAccountData ({changes, accountData}) {
   const mergedAccountData = {
     personal_data: {},
     communication_channels: {},
-    shared_personal_data: {...DEFAULT_SHARED_PERSONAL_DATA},
+    shared_personal_data: Object.assign({}, DEFAULT_SHARED_PERSONAL_DATA),
     consents: {}
   };
 
@@ -25,7 +25,7 @@ module.exports = function mergeAccountData ({changes, accountData}) {
           Object.assign(
             mergedAccountData[key][communicationChannelKey],
             accountData[key] && accountData[key][communicationChannelKey] || {},
-            changes[key] && changes[key][communicationChannelKey] || {},
+            changes[key] && changes[key][communicationChannelKey] || {}
           );
         }
       });
@@ -33,7 +33,7 @@ module.exports = function mergeAccountData ({changes, accountData}) {
       Object.assign(
         mergedAccountData[key],
         accountData[key] || {},
-        changes[key] || {},
+        changes[key] || {}
       );
     }
   });
