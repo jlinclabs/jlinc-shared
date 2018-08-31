@@ -46,12 +46,10 @@ const calculateNewStagedValue = function(section, current, staged, change) {
     potentialChange = change === undefined ? staged : change;
     if (potentialChange === current) return undefined;
     return potentialChange;
-    break;
   case 'personal_data':
     if (change !== undefined && change === current) return undefined;
     if (change === undefined) return staged;
     return change;
-    break;
   case 'communication_channels':
     current = current === undefined ? false : !!current.enabled;
     staged = staged === undefined ? undefined : !!staged.enabled;
@@ -59,6 +57,5 @@ const calculateNewStagedValue = function(section, current, staged, change) {
     potentialChange = change === undefined ? staged : change;
     if (potentialChange === current) return undefined;
     return { enabled: potentialChange };
-    break;
   }
 };
