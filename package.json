@@ -8,7 +8,7 @@
     "npm": "^6.2.0"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "nyc --reporter=text --check-coverage --lines 90 --per-file mocha"
   },
   "repository": {
     "type": "git",
@@ -22,7 +22,8 @@
     "chai": "^4.1.2",
     "eslint": "^5.2.0",
     "istanbul": "^0.4.5",
-    "mocha": "^5.2.0"
+    "mocha": "^5.2.0",
+    "nyc": "^13.0.1"
   },
   "dependencies": {
     "deepcopy": "^1.0.0"
