@@ -257,6 +257,7 @@ describe('mergeAccountDataChanges', function(){
             lastname: 'Devilous', // change change
             faxnumber: '666-666-66666', // add change
             mailingcity: 'Hell', // non-change
+            homephone: '', // negate change
             mobilephone: undefined, // non-change
             businessphone: '1-800-google', // add change
           },
@@ -267,7 +268,6 @@ describe('mergeAccountDataChanges', function(){
         lastname: 'Devilous',
         birthdate: '6/6/6',
         gender: 'female',
-        homephone: '415-666-6666',
         faxnumber: '666-666-66666',
         businessphone: '1-800-google',
       },
@@ -507,6 +507,37 @@ describe('mergeAccountDataChanges', function(){
     stageChanges({
       shared_personal_data: {
         email: false,
+      },
+    });
+    expect(stagedChanges).to.deep.equal({
+      consents: {
+        'Product Marketing': true,
+      },
+      communication_channels: {
+        email_media: { enabled: true },
+      },
+    });
+
+    stageChanges({
+      personal_data: {
+        gender: 'fluid',
+      },
+    });
+    expect(stagedChanges).to.deep.equal({
+      personal_data: {
+        gender: 'fluid',
+      },
+      consents: {
+        'Product Marketing': true,
+      },
+      communication_channels: {
+        email_media: { enabled: true },
+      },
+    });
+
+    stageChanges({
+      personal_data: {
+        gender: '',
       },
     });
     expect(stagedChanges).to.deep.equal({

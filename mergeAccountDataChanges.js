@@ -44,6 +44,7 @@ const calculateNewStagedValue = function(section, current, staged, change) {
     if (potentialChange === current) return undefined;
     return potentialChange;
   case 'personal_data':
+    if (current === undefined) current = '';
     if (change !== undefined && change === current) return undefined;
     if (change === undefined) return staged;
     return change;
