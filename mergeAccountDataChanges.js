@@ -11,9 +11,12 @@ module.exports = function({ currentAccountData = {}, stagedChanges = {}, newChan
     const newStagedSection = {};
     if (!stagedChanges[section] && !newChanges[section]) return;
     keys.forEach(function(key) {
-      const current = currentAccountData[section] &&  currentAccountData[section][key];
-      const staged  =      stagedChanges[section] &&       stagedChanges[section][key];
-      const change  =         newChanges[section] &&          newChanges[section][key];
+      let current = currentAccountData[section] &&  currentAccountData[section][key];
+      let staged  =      stagedChanges[section] &&       stagedChanges[section][key];
+      let change  =         newChanges[section] &&          newChanges[section][key];
+      if (current === null) current = undefined;
+      if (staged === null) staged = undefined;
+      if (change === null) change = undefined;
       if (staged === undefined && change === undefined) return;
       const newValue = calculateNewStagedValue(section, current, staged, change);
       if (newValue !== undefined) newStagedSection[key] = newValue;

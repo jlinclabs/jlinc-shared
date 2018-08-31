@@ -1,6 +1,7 @@
 'use strict';
 
 const mergeAccountDataChanges = require('../mergeAccountDataChanges');
+const DEFAULT_ACCOUNT_DATA = require('../default_account_data');
 
 describe('mergeAccountDataChanges', function(){
 
@@ -361,23 +362,7 @@ describe('mergeAccountDataChanges', function(){
   });
 
   it('should work how the portals intend to use it', function(){
-    let currentAccountData = {
-      shared_personal_data: {
-        email: false,
-        firstname: true,
-      },
-      personal_data: {
-        firstname: 'Aliceia',
-        lastname: 'Atron',
-      },
-      consents: {
-        'New Product Marketing': false,
-        'Discount Offers': true,
-      },
-      communication_channels: {
-        sms_media: { enabled: true },
-      }
-    };
+    let currentAccountData = DEFAULT_ACCOUNT_DATA;
     let stagedChanges;
 
     const stageChanges = newChanges => {
@@ -394,46 +379,95 @@ describe('mergeAccountDataChanges', function(){
     stageChanges({});
     expect(stagedChanges).to.be.undefined;
 
+    // change gender to fluid
     stageChanges({
-      shared_personal_data: {
-        email: true,
+      personal_data: {
+        gender: 'fluid',
       },
     });
     expect(stagedChanges).to.deep.equal({
-      shared_personal_data: {
-        email: true,
+      personal_data: {
+        gender: 'fluid',
       },
     });
 
+    // empty out gender field
+    stageChanges({
+      personal_data: {
+        gender: '',
+      },
+    });
+    expect(stagedChanges).to.be.undefined;
+
+    // change gender to queer
+    stageChanges({
+      personal_data: {
+        gender: 'queer',
+      },
+    });
+    expect(stagedChanges).to.deep.equal({
+      personal_data: {
+        gender: 'queer',
+      },
+    });
+
+    // weird edge case
+    stageChanges({
+      personal_data: {
+        gender: undefined,
+      },
+    });
+    expect(stagedChanges).to.deep.equal({
+      personal_data: {
+        gender: 'queer',
+      },
+    });
+
+    // weird edge case
+    stageChanges({
+      personal_data: {
+        gender: null,
+      },
+    });
+    expect(stagedChanges).to.deep.equal({
+      personal_data: {
+        gender: 'queer',
+      },
+    });
+
+    // empty out gender field
+    stageChanges({
+      personal_data: {
+        gender: '',
+      },
+    });
+    expect(stagedChanges).to.be.undefined;
+
+    // stop sharing emil
     stageChanges({
       shared_personal_data: {
         email: false,
       },
     });
-    expect(stagedChanges).to.be.undefined;
+    expect(stagedChanges).to.deep.equal({
+      shared_personal_data: {
+        email: false,
+      },
+    });
 
+    // start sharing emil
     stageChanges({
       shared_personal_data: {
-        email: true,
+        firstname: true,
       },
     });
     expect(stagedChanges).to.deep.equal({
       shared_personal_data: {
-        email: true,
+        email: false,
       },
     });
 
-    stageChanges({
-      shared_personal_data: {
-        firstname: true, // non-change
-      },
-    });
-    expect(stagedChanges).to.deep.equal({
-      shared_personal_data: {
-        email: true,
-      },
-    });
-
+    // share a non-existant personal_data field
     stageChanges({
       shared_personal_data: {
         booshnozel: true, // non-change
@@ -441,10 +475,11 @@ describe('mergeAccountDataChanges', function(){
     });
     expect(stagedChanges).to.deep.equal({
       shared_personal_data: {
-        email: true,
+        email: false,
       },
     });
 
+    // enable Product Marketing consents
     stageChanges({
       consents: {
         'Product Marketing': true, // add change
@@ -452,13 +487,14 @@ describe('mergeAccountDataChanges', function(){
     });
     expect(stagedChanges).to.deep.equal({
       shared_personal_data: {
-        email: true,
+        email: false,
       },
       consents: {
         'Product Marketing': true,
       },
     });
 
+    // disabled an already disabled consent
     stageChanges({
       consents: {
         'New Product Marketing': false, // non-change
@@ -466,13 +502,14 @@ describe('mergeAccountDataChanges', function(){
     });
     expect(stagedChanges).to.deep.equal({
       shared_personal_data: {
-        email: true,
+        email: false,
       },
       consents: {
         'Product Marketing': true,
       },
     });
 
+    // disable already disabled communication channel
     stageChanges({
       communication_channels: {
         email_media: { enabled: false }, // non-change
@@ -480,13 +517,14 @@ describe('mergeAccountDataChanges', function(){
     });
     expect(stagedChanges).to.deep.equal({
       shared_personal_data: {
-        email: true,
+        email: false,
       },
       consents: {
         'Product Marketing': true,
       },
     });
 
+    // enable email media communication channel
     stageChanges({
       communication_channels: {
         email_media: { enabled: true }, // add change
@@ -494,22 +532,8 @@ describe('mergeAccountDataChanges', function(){
     });
     expect(stagedChanges).to.deep.equal({
       shared_personal_data: {
-        email: true,
-      },
-      consents: {
-        'Product Marketing': true,
-      },
-      communication_channels: {
-        email_media: { enabled: true },
-      },
-    });
-
-    stageChanges({
-      shared_personal_data: {
         email: false,
       },
-    });
-    expect(stagedChanges).to.deep.equal({
       consents: {
         'Product Marketing': true,
       },
@@ -518,35 +542,5 @@ describe('mergeAccountDataChanges', function(){
       },
     });
 
-    stageChanges({
-      personal_data: {
-        gender: 'fluid',
-      },
-    });
-    expect(stagedChanges).to.deep.equal({
-      personal_data: {
-        gender: 'fluid',
-      },
-      consents: {
-        'Product Marketing': true,
-      },
-      communication_channels: {
-        email_media: { enabled: true },
-      },
-    });
-
-    stageChanges({
-      personal_data: {
-        gender: '',
-      },
-    });
-    expect(stagedChanges).to.deep.equal({
-      consents: {
-        'Product Marketing': true,
-      },
-      communication_channels: {
-        email_media: { enabled: true },
-      },
-    });
   });
 });
