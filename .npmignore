@@ -2,3 +2,5 @@ README.md
 scripts/
 test/
 .eslint*
+coverage
+.nyc_output
