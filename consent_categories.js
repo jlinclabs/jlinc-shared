@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = Object.freeze({
-  'Content Permission': [
+  'Content Permission': Object.freeze([
     'Brand Marketing',
     'Product Marketing',
     'New Product Marketing',
@@ -13,17 +13,17 @@ module.exports = Object.freeze({
     'Membership',
     'Volunteering',
     'Fundraising',
-  ],
-  'Data Sharing Permission': [
+  ]),
+  'Data Sharing Permission': Object.freeze([
     'Sharing Data within Group',
     'Sharing Data with Partners',
-  ],
-  'Data Purpose Permission': [
+  ]),
+  'Data Purpose Permission': Object.freeze([
     'Automated Decision Making',
     'Location Tracking',
     'Online Tracking',
-  ],
-  'Data Management Permission': [
+  ]),
+  'Data Management Permission': Object.freeze([
     'Cross-Border Transfers',
-  ]
+  ]),
 });

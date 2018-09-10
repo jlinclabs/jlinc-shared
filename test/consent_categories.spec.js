@@ -9,4 +9,11 @@ describe('consent_categories', function() {
       .reduce((consents, category) => ([...consents, ...category]));
     expect(consentsFromConsentCategories).to.deep.equal(CONSENTS);
   });
+
+  it('should be deeply frozen', function(){
+    expect(CONSENT_CATEGORIES).to.be.frozen;
+    Object.values(CONSENT_CATEGORIES).forEach(value => {
+      expect(value).to.be.frozen;
+    });
+  });
 });
