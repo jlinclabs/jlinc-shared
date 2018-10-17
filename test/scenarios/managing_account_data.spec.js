@@ -1,7 +1,7 @@
 'use strict';
 
 const deepfreeze = require('deep-freeze-node');
-const DEFAULT_ACCOUNT_DATA = require('../../default_account_data');
+const normalizeAccountData = require('../../normalizeAccountData');
 const mergeAccountData = require('../../mergeAccountData');
 const diffAccountData = require('../../diffAccountData');
 const stripNonRequestedAccountData = require('../../stripNonRequestedAccountData');
@@ -96,7 +96,7 @@ describe('managing account data', function(){
     };
 
     beforeEach(function(){
-      defaultAccountData = mergeAccountData(DEFAULT_ACCOUNT_DATA, {});
+      defaultAccountData = normalizeAccountData();
       defaultAccountDataStagedChanges = undefined;
     });
 
@@ -116,7 +116,7 @@ describe('managing account data', function(){
       it('should remove those changes from the stage', function(){
         stageDefaultAccountDataChanges({
           shared_personal_data: {
-            email: true,
+            email: false,
           },
           personal_data: {
             email: null,
@@ -132,7 +132,7 @@ describe('managing account data', function(){
 
         stageDefaultAccountDataChanges({
           shared_personal_data: {
-            email: false,
+            email: true,
           },
           personal_data: {
             email: 'alice@example.com',
@@ -146,7 +146,7 @@ describe('managing account data', function(){
         });
         expect(defaultAccountDataStagedChanges).to.deep.equal({
           shared_personal_data: {
-            email: false,
+            email: true,
           },
           personal_data: {
             email: 'alice@example.com',
@@ -161,7 +161,7 @@ describe('managing account data', function(){
 
         stageDefaultAccountDataChanges({
           shared_personal_data: {
-            email: true,
+            email: false,
           },
         });
         expect(defaultAccountDataStagedChanges).to.deep.equal({
@@ -206,7 +206,7 @@ describe('managing account data', function(){
       it('should add those changes to the stage', function(){
         stageDefaultAccountDataChanges({
           shared_personal_data: {
-            email: false,
+            email: true,
           },
           personal_data: {
             email: 'alice@example.com',
@@ -220,7 +220,7 @@ describe('managing account data', function(){
         });
         expect(defaultAccountDataStagedChanges).to.deep.equal({
           shared_personal_data: {
-            email: false,
+            email: true,
           },
           personal_data: {
             email: 'alice@example.com',
@@ -243,13 +243,14 @@ describe('managing account data', function(){
     let organizationAccountDataStagedChanges;
 
     const stageOrganizationAccountDataChange = function(changes){
-      organizationAccountDataStagedChanges = stripNonRequestedAccountData(
-        diffAccountData(
-          organizationAccountData,
-          mergeAccountData(organizationAccountData, changes),
-        ),
-        organizationRequestedData,
-      );
+      organizationAccountDataStagedChanges = mergeAccountData(organizationAccountDataStagedChanges, changes);
+      organizationAccountDataStagedChanges = diffAccountData(organizationAccountData, organizationAccountDataStagedChanges);
+      if (organizationAccountDataStagedChanges){
+        organizationAccountDataStagedChanges = stripNonRequestedAccountData(
+          organizationAccountDataStagedChanges,
+          organizationRequestedData,
+        );
+      }
     };
 
     beforeEach(function(){
@@ -269,10 +270,86 @@ describe('managing account data', function(){
         },
       };
       organizationAccountData = stripNonRequestedAccountData(
-        mergeAccountData(DEFAULT_ACCOUNT_DATA),
+        normalizeAccountData(),
         organizationRequestedData,
       );
       organizationAccountDataStagedChanges = undefined;
+    });
+
+    it('should only stage keys that are different from the current organizationAccountData', function(){
+      expect(organizationAccountDataStagedChanges).to.be.undefined;
+
+      stageOrganizationAccountDataChange({});
+      expect(organizationAccountDataStagedChanges).to.be.undefined;
+
+      stageOrganizationAccountDataChange({
+        shared_personal_data: {
+          email: false,
+        }
+      });
+      expect(organizationAccountDataStagedChanges).to.be.undefined;
+
+      stageOrganizationAccountDataChange({
+        shared_personal_data: {
+          email: true,
+          firstname: false,
+        }
+      });
+      expect(organizationAccountDataStagedChanges).to.deep.equal({
+        shared_personal_data: {
+          email: true,
+        }
+      });
+
+      stageOrganizationAccountDataChange({
+        shared_personal_data: {
+          email: false,
+          firstname: false,
+        }
+      });
+      expect(organizationAccountDataStagedChanges).to.be.undefined;
+
+      stageOrganizationAccountDataChange({
+        consents: {
+          'Brand Marketing': true,
+        }
+      });
+      expect(organizationAccountDataStagedChanges).to.deep.equal({
+        consents: {
+          'Brand Marketing': true,
+        }
+      });
+
+      stageOrganizationAccountDataChange({
+        consents: {
+          'Product Marketing': true,
+        }
+      });
+      expect(organizationAccountDataStagedChanges).to.deep.equal({
+        consents: {
+          'Brand Marketing': true,
+          'Product Marketing': true,
+        }
+      });
+
+      stageOrganizationAccountDataChange({
+        consents: {
+          'Product Marketing': false,
+        }
+      });
+      expect(organizationAccountDataStagedChanges).to.deep.equal({
+        consents: {
+          'Brand Marketing': true,
+        }
+      });
+
+      stageOrganizationAccountDataChange({
+        consents: {
+          'Brand Marketing': false
+        }
+      });
+      expect(organizationAccountDataStagedChanges).to.be.undefined;
+
     });
 
     context('that contains invalid account data keys', function(){
@@ -281,12 +358,12 @@ describe('managing account data', function(){
           bullshit: 'righthere',
           shared_personal_data: {
             moreBS: true,
-            firstname: false,
+            firstname: true,
           }
         });
         expect(organizationAccountDataStagedChanges).to.deep.equal({
           shared_personal_data: {
-            firstname: false,
+            firstname: true,
           },
         });
       });
@@ -296,7 +373,7 @@ describe('managing account data', function(){
       it('should only stage the keys requested by the organization', function(){
         stageOrganizationAccountDataChange({
           shared_personal_data: {
-            firstname: false,
+            firstname: true,
             salutation: true,
           },
           personal_data: {
@@ -314,7 +391,7 @@ describe('managing account data', function(){
         });
         expect(organizationAccountDataStagedChanges).to.deep.equal({
           shared_personal_data: {
-            firstname: false,
+            firstname: true,
           },
           personal_data: {
             email: 'alice@example.com',
