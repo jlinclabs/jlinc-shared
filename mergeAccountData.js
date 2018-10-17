@@ -1,42 +1,32 @@
 'use strict';
 
-const DEFAULT_SHARED_PERSONAL_DATA = require('./default_shared_personal_data');
-const COMMUNICATION_CHANNEL_KEYS = require('./communication_channels');
+const DEFAULT_ACCOUNT_DATA = require('./default_account_data');
+const isValidAccountDataSectionValue = require('./isValidAccountDataSectionValue');
 
-module.exports = function mergeAccountData ({changes, accountData}) {
-  if (!changes) throw new Error('changes required');
-  if (!accountData) throw new Error('accountData required');
-
-  const mergedAccountData = {
-    personal_data: {},
-    communication_channels: {},
-    shared_personal_data: Object.assign({}, DEFAULT_SHARED_PERSONAL_DATA),
-    consents: {}
-  };
-
-  Object.keys(mergedAccountData).forEach(key => {
-    if (key === 'communication_channels') {
-      COMMUNICATION_CHANNEL_KEYS.forEach(communicationChannelKey => {
-        if (
-          (changes[key] && changes[key][communicationChannelKey]) ||
-          (accountData[key] && accountData[key][communicationChannelKey])
-        ) {
-          mergedAccountData[key][communicationChannelKey] = {};
-          Object.assign(
-            mergedAccountData[key][communicationChannelKey],
-            accountData[key] && accountData[key][communicationChannelKey] || {},
-            changes[key] && changes[key][communicationChannelKey] || {}
-          );
+module.exports = function mergeAccountData (left, right){
+  const mergedAccountData = {};
+  for (const section in DEFAULT_ACCOUNT_DATA){
+    const leftSection = left && left[section];
+    const rightSection = right && right[section];
+    if (!rightSection && !leftSection) continue;
+    mergedAccountData[section] = {};
+    for (const key in DEFAULT_ACCOUNT_DATA[section]){
+      if (rightSection){
+        const rightValue = rightSection[key];
+        if (isValidAccountDataSectionValue(section, rightValue)){
+          mergedAccountData[section][key] = rightValue;
+          continue;
         }
-      });
-    } else {
-      Object.assign(
-        mergedAccountData[key],
-        accountData[key] || {},
-        changes[key] || {}
-      );
+      }
+      if (leftSection){
+        const leftValue = leftSection[key];
+        if (isValidAccountDataSectionValue(section, leftValue)){
+          mergedAccountData[section][key] = leftValue;
+        }
+      }
     }
-  });
-
+    if (Object.keys(mergedAccountData[section]).length === 0)
+      delete mergedAccountData[section];
+  }
   return mergedAccountData;
 };
