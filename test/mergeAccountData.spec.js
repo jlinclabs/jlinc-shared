@@ -1,48 +1,12 @@
 'use strict';
 
-const DEFAULT_ACCOUNT_DATA = require('../default_account_data');
 const mergeAccountData = require('../mergeAccountData');
 
 describe('mergeAccountData', function(){
 
-  context('({}, {})', function(){
+  context('when merging two empty objects', function(){
     it('should return and empty object', function(){
       expect(mergeAccountData({}, {})).to.deep.equal({});
-    });
-  });
-
-  context('(DEFAULT_ACCOUNT_DATA, {})', function(){
-    it('should return a deep copy of DEFAULT_ACCOUNT_DATA', function(){
-      expect(mergeAccountData(DEFAULT_ACCOUNT_DATA, {})).to.deep.equal(DEFAULT_ACCOUNT_DATA);
-      expect(mergeAccountData(DEFAULT_ACCOUNT_DATA, {})).to.not.equal(DEFAULT_ACCOUNT_DATA);
-    });
-  });
-
-  context('(DEFAULT_ACCOUNT_DATA, undefined)', function(){
-    it('should return a deep copy of DEFAULT_ACCOUNT_DATA', function(){
-      expect(mergeAccountData(DEFAULT_ACCOUNT_DATA, undefined)).to.deep.equal(DEFAULT_ACCOUNT_DATA);
-      expect(mergeAccountData(DEFAULT_ACCOUNT_DATA, undefined)).to.not.equal(DEFAULT_ACCOUNT_DATA);
-    });
-  });
-
-  context('({}, DEFAULT_ACCOUNT_DATA)', function(){
-    it('should return a deep copy of DEFAULT_ACCOUNT_DATA', function(){
-      expect(mergeAccountData({}, DEFAULT_ACCOUNT_DATA)).to.deep.equal(DEFAULT_ACCOUNT_DATA);
-      expect(mergeAccountData({}, DEFAULT_ACCOUNT_DATA)).to.not.equal(DEFAULT_ACCOUNT_DATA);
-    });
-  });
-
-  context('(undefined, DEFAULT_ACCOUNT_DATA)', function(){
-    it('should return a deep copy of DEFAULT_ACCOUNT_DATA', function(){
-      expect(mergeAccountData(undefined, DEFAULT_ACCOUNT_DATA)).to.deep.equal(DEFAULT_ACCOUNT_DATA);
-      expect(mergeAccountData(undefined, DEFAULT_ACCOUNT_DATA)).to.not.equal(DEFAULT_ACCOUNT_DATA);
-    });
-  });
-
-  context('(DEFAULT_ACCOUNT_DATA, DEFAULT_ACCOUNT_DATA)', function(){
-    it('should return a deep copy of DEFAULT_ACCOUNT_DATA', function(){
-      expect(mergeAccountData(DEFAULT_ACCOUNT_DATA, DEFAULT_ACCOUNT_DATA)).to.deep.equal(DEFAULT_ACCOUNT_DATA);
-      expect(mergeAccountData(DEFAULT_ACCOUNT_DATA, DEFAULT_ACCOUNT_DATA)).to.not.equal(DEFAULT_ACCOUNT_DATA);
     });
   });
 
@@ -84,7 +48,7 @@ describe('mergeAccountData', function(){
           },
           personal_data: {
             email: 'email',
-            firstname: null,
+            firstname: '',
           },
           consents: {
             'Brand Marketing': true,
@@ -108,7 +72,7 @@ describe('mergeAccountData', function(){
             email: 'email2',
             firstname: 'firstname2',
             lastname: 'lastname2',
-            salutation: null,
+            salutation: '',
           },
           consents: {
             'Brand Marketing': false,
@@ -132,7 +96,7 @@ describe('mergeAccountData', function(){
         email: 'email2',
         firstname: 'firstname2',
         lastname: 'lastname2',
-        salutation: null,
+        salutation: '',
       },
       consents: {
         'Brand Marketing': false,

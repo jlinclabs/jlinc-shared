@@ -13,7 +13,8 @@ describe('isValidAccountDataSectionValue', function(){
   context(`when section = 'personal_data'`, function(){
     it('should check if the value is string or null', function(){
       expect( isValidAccountDataSectionValue('personal_data') ).to.be.false;
-      expect( isValidAccountDataSectionValue('personal_data', null) ).to.be.true;
+      expect( isValidAccountDataSectionValue('personal_data', null) ).to.be.false;
+      expect( isValidAccountDataSectionValue('personal_data', '') ).to.be.true;
       expect( isValidAccountDataSectionValue('personal_data', 'x') ).to.be.true;
     });
   });

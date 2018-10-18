@@ -24,7 +24,9 @@ const defaultAccountDataSectionValue = function(section){
     return false;
   case 'communication_channels':
     return { enabled: false };
+  case 'personal_data':
+    return '';
   default:
-    return null;
+    throw new Error(`invalid section ${section}`);
   }
 };

@@ -1,24 +1,28 @@
 'use strict';
 
-const DEFAULT_ACCOUNT_DATA = require('./default_account_data');
+const ACCOUNT_DATA_KEYS = require('./account_data_keys');
 const mergeAccountData = require('./mergeAccountData');
 
 module.exports = function stripNonRequestedAccountData(accountData, requestedData) {
   if (!accountData) throw new Error('accountData is required');
   if (!requestedData) throw new Error('requestedData is required');
   const strippedAccountData = mergeAccountData(accountData, {});
-  for (const section in DEFAULT_ACCOUNT_DATA){
-    // if (section === 'shared_personal_data') continue;
-    const requestedDataKey = section === 'shared_personal_data' ? 'personal_data' : section;
+  for (const section of ACCOUNT_DATA_KEYS){
     if (!(section in accountData)) continue;
-    if (!(requestedDataKey in requestedData)) {
-      strippedAccountData[section] = {};
+
+    const requestedDataKey = section === 'shared_personal_data' ? 'personal_data' : section;
+    if (!(requestedDataKey in requestedData)){
+      delete strippedAccountData[section];
       continue;
-    };
-    for (const key in DEFAULT_ACCOUNT_DATA[section]){
+    }
+
+    for (const key in strippedAccountData[section]){
       if (requestedData[requestedDataKey][key] !== true)
         delete strippedAccountData[section][key];
     }
+    if (Object.keys(strippedAccountData[section]).length === 0)
+      delete strippedAccountData[section];
   }
-  return strippedAccountData;
+  // console.log('strippedAccountData', strippedAccountData)
+  return Object.keys(strippedAccountData).length === 0 ? undefined : strippedAccountData;
 };

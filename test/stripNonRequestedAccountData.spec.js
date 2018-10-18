@@ -1,6 +1,6 @@
 'use strict';
 
-const DEFAULT_ACCOUNT_DATA = require('../default_account_data');
+const normalizeAccountData = require('../normalizeAccountData');
 const stripNonRequestedAccountData = require('../stripNonRequestedAccountData');
 
 describe('stripNonRequestedAccountData', function(){
@@ -12,27 +12,41 @@ describe('stripNonRequestedAccountData', function(){
     });
   });
 
-  context('when the organization requests no data fields', function(){
-    it('should strip out all sections but shared_personal_data', function(){
+  context('when the organization requests no data', function(){
+    it('should return undefined', function(){
       expect(
         stripNonRequestedAccountData(
-          DEFAULT_ACCOUNT_DATA,
-          {}
+          normalizeAccountData(),
+          {},
         )
-      ).to.deep.equal({
-        shared_personal_data: {},
-        personal_data: {},
-        consents: {},
-        communication_channels: {},
-      });
+      ).to.be.undefined;
     });
   });
 
   context('when the organization requests only some data fields', function(){
-    it('should strip out all sections but shared_personal_data', function(){
+    it('should strip out all non requested data', function(){
+
       expect(
         stripNonRequestedAccountData(
-          DEFAULT_ACCOUNT_DATA,
+          normalizeAccountData(),
+          {
+            personal_data: {
+              email: true,
+            },
+          }
+        )
+      ).to.deep.equal({
+        shared_personal_data: {
+          email: false,
+        },
+        personal_data: {
+          email: '',
+        },
+      });
+
+      expect(
+        stripNonRequestedAccountData(
+          normalizeAccountData(),
           {
             personal_data: {
               email: true,
@@ -53,12 +67,12 @@ describe('stripNonRequestedAccountData', function(){
         )
       ).to.deep.equal({
         shared_personal_data: {
-          email: true,
-          firstname: true,
+          email: false,
+          firstname: false,
         },
         personal_data: {
-          email: null,
-          firstname: null,
+          email: '',
+          firstname: '',
         },
         consents: {
           'Brand Marketing': false,
@@ -100,12 +114,7 @@ describe('stripNonRequestedAccountData', function(){
         getAccountData(),
         {}
       )
-    ).to.deep.equal({
-      shared_personal_data: {},
-      personal_data: {},
-      consents: {},
-      communication_channels: {},
-    });
+    ).to.be.undefined;
 
     expect(
       stripNonRequestedAccountData(
@@ -123,8 +132,6 @@ describe('stripNonRequestedAccountData', function(){
         }
       )
     ).to.deep.equal({
-      shared_personal_data: {
-      },
       personal_data: {
         email: 'morty@sanchez.me',
       },
@@ -157,8 +164,6 @@ describe('stripNonRequestedAccountData', function(){
         }
       )
     ).to.deep.equal({
-      shared_personal_data: {
-      },
       personal_data: {
         firstname: "Morty",
       },
@@ -179,7 +184,7 @@ describe('stripNonRequestedAccountData', function(){
           {},
           {}
         )
-      ).to.deep.equal({});
+      ).to.be.undefined;
 
       expect(
         stripNonRequestedAccountData(
@@ -202,7 +207,7 @@ describe('stripNonRequestedAccountData', function(){
             }
           }
         )
-      ).to.deep.equal({});
+      ).to.be.undefined;
     });
   });
 });

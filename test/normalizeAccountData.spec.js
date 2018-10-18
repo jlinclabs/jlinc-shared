@@ -1,7 +1,6 @@
 'use strict';
 
 const deepfreeze = require('deep-freeze-node');
-const DEFAULT_ACCOUNT_DATA = require('../default_account_data');
 const normalizeAccountData = require('../normalizeAccountData');
 
 const NORMALIZED_EMPTY_ACCOUNT_DATA = deepfreeze({
@@ -30,28 +29,28 @@ const NORMALIZED_EMPTY_ACCOUNT_DATA = deepfreeze({
     businessphone: false,
   },
   personal_data: {
-    email: null,
-    firstname: null,
-    lastname: null,
-    salutation: null,
-    title: null,
-    birthdate: null,
-    gender: null,
-    mailingstreet: null,
-    mailingcity: null,
-    mailingstate: null,
-    mailingpostalcode: null,
-    mailingcountry: null,
-    homephone: null,
-    mobilephone: null,
-    faxnumber: null,
-    businessname: null,
-    businessindustry: null,
-    businessstreet: null,
-    businesscity: null,
-    businesscountry: null,
-    businesspostalcode: null,
-    businessphone: null,
+    email: '',
+    firstname: '',
+    lastname: '',
+    salutation: '',
+    title: '',
+    birthdate: '',
+    gender: '',
+    mailingstreet: '',
+    mailingcity: '',
+    mailingstate: '',
+    mailingpostalcode: '',
+    mailingcountry: '',
+    homephone: '',
+    mobilephone: '',
+    faxnumber: '',
+    businessname: '',
+    businessindustry: '',
+    businessstreet: '',
+    businesscity: '',
+    businesscountry: '',
+    businesspostalcode: '',
+    businessphone: '',
   },
   consents: {
     'Brand Marketing': false,
@@ -85,11 +84,39 @@ const NORMALIZED_EMPTY_ACCOUNT_DATA = deepfreeze({
 describe('normalizeAccountData', function(){
   it('should make any implicit values, explicit', function(){
     expect( normalizeAccountData({}) ).to.deep.equal(NORMALIZED_EMPTY_ACCOUNT_DATA);
-  });
-
-  context('(DEFAULT_ACCOUNT_DATA)', function(){
-    it('should return a deep clone of DEFAULT_ACCOUNT_DATA', function(){
-      expect(normalizeAccountData(DEFAULT_ACCOUNT_DATA)).to.deep.equal(DEFAULT_ACCOUNT_DATA);
+    expect( normalizeAccountData(NORMALIZED_EMPTY_ACCOUNT_DATA) ).to.deep.equal(NORMALIZED_EMPTY_ACCOUNT_DATA);
+    expect(
+      normalizeAccountData({
+        shared_personal_data: {
+          birthdate: true,
+        },
+        personal_data: {
+          email: 'alice@example.com',
+        },
+        consents: {
+          'Brand Marketing': true,
+        },
+        communication_channels: {
+          email_media: { enabled: true },
+        },
+      })
+    ).to.deep.equal({
+      shared_personal_data: {
+        ...NORMALIZED_EMPTY_ACCOUNT_DATA.shared_personal_data,
+        birthdate: true,
+      },
+      personal_data: {
+        ...NORMALIZED_EMPTY_ACCOUNT_DATA.personal_data,
+        email: 'alice@example.com',
+      },
+      consents: {
+        ...NORMALIZED_EMPTY_ACCOUNT_DATA.consents,
+        'Brand Marketing': true,
+      },
+      communication_channels: {
+        ...NORMALIZED_EMPTY_ACCOUNT_DATA.communication_channels,
+        email_media: { enabled: true },
+      },
     });
   });
 
@@ -132,7 +159,6 @@ describe('normalizeAccountData', function(){
           ...NORMALIZED_EMPTY_ACCOUNT_DATA.communication_channels,
           email_media: { enabled: true },
         },
-
       });
     });
   });

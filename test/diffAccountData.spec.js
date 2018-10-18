@@ -1,14 +1,71 @@
 'use strict';
 
-const deepfreeze = require('deep-freeze-node');
-
-const DEFAULT_ACCOUNT_DATA = require('../default_account_data');
 const diffAccountData = require('../diffAccountData');
+const normalizeAccountData = require('../normalizeAccountData');
 
 describe('diffAccountData', function(){
-  context('({}, {})', function(){
+  context('when given matching objects', function(){
     it('should return undefined', function(){
-      expect(diffAccountData({}, {})).to.be.undefined;
+      expect(
+        diffAccountData(
+          {},
+          {},
+        )
+      ).to.be.undefined;
+
+      expect(
+        diffAccountData(
+          normalizeAccountData({}),
+          normalizeAccountData({}),
+        )
+      ).to.be.undefined;
+
+      expect(
+        diffAccountData(
+          normalizeAccountData({}),
+          {},
+        )
+      ).to.be.undefined;
+    });
+  });
+  context('when given differing objects', function(){
+    it('should return an account data object with only those differences', function(){
+      expect(
+        diffAccountData(
+          normalizeAccountData({}),
+          {
+            shared_personal_data: {
+              email: false,
+              firstname: true,
+            },
+            personal_data: {
+              email: '',
+              firstname: 'Alice',
+            },
+            consents: {
+              'Brand Marketing': false,
+              'Product Marketing': true,
+            },
+            communication_channels: {
+              email_media: { enabled: false },
+              fax_media: { enabled: true },
+            },
+          },
+        )
+      ).to.deep.equal({
+        shared_personal_data: {
+          firstname: true,
+        },
+        personal_data: {
+          firstname: 'Alice',
+        },
+        consents: {
+          'Product Marketing': true,
+        },
+        communication_channels: {
+          fax_media: { enabled: true },
+        },
+      });
     });
   });
 
@@ -64,45 +121,6 @@ describe('diffAccountData', function(){
           firstname: false,
         },
       });
-    });
-  });
-
-  it('should return the difference between the two given accoundData objects', function(){
-    let changes = deepfreeze({
-      shared_personal_data: {
-        email: false,
-        firstname: true,
-      },
-      personal_data: {
-        email: null,
-        firstname: 'changed-firstname',
-        lastname: '',
-      },
-      consents: {
-        'Brand Marketing': false,
-        'Product Marketing': true,
-      },
-      communication_channels: {
-        email_media: { enabled: true },
-        fax_media: { enabled: false },
-      }
-    });
-
-    expect(diffAccountData({}, changes)).to.deep.equal(changes);
-    expect(diffAccountData(DEFAULT_ACCOUNT_DATA, changes)).to.deep.equal({
-      shared_personal_data: {
-        email: false,
-      },
-      personal_data: {
-        firstname: 'changed-firstname',
-        lastname: '',
-      },
-      consents: {
-        'Product Marketing': true,
-      },
-      communication_channels: {
-        email_media: { enabled: true },
-      }
     });
   });
 
