@@ -1,13 +1,13 @@
 'use strict';
 
-const DEFAULT_ACCOUNT_DATA = require('./default_account_data');
+const ACCOUNT_DATA_SHAPE = require('./ACCOUNT_DATA_SHAPE');
 const isValidAccountDataSectionValue = require('./isValidAccountDataSectionValue');
 
 module.exports = function normalizeAccountData(accountData) {
   const normalizedAccountData = {};
-  for (const section in DEFAULT_ACCOUNT_DATA){
+  for (const section in ACCOUNT_DATA_SHAPE){
     normalizedAccountData[section] = {};
-    for (const key in DEFAULT_ACCOUNT_DATA[section]){
+    for (const key of ACCOUNT_DATA_SHAPE[section]){
       let newValue = accountData && accountData[section] && accountData[section][key];
       normalizedAccountData[section][key] = isValidAccountDataSectionValue(section, newValue)
         ? newValue
@@ -26,7 +26,5 @@ const defaultAccountDataSectionValue = function(section){
     return { enabled: false };
   case 'personal_data':
     return '';
-  default:
-    throw new Error(`invalid section ${section}`);
   }
 };

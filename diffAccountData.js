@@ -1,16 +1,16 @@
 'use strict';
 
-const DEFAULT_ACCOUNT_DATA = require('./default_account_data');
+const ACCOUNT_DATA_SHAPE = require('./ACCOUNT_DATA_SHAPE');
 const isValidAccountDataSectionValue = require('./isValidAccountDataSectionValue');
 
 module.exports = function diffAccountData(left = {}, right = {}){
   let diff = {};
-  for (const section in DEFAULT_ACCOUNT_DATA){
+  for (const section in ACCOUNT_DATA_SHAPE){
     const leftSection = left[section];
     const rightSection = right[section];
     if (!rightSection) continue;
     diff[section] = {};
-    for (const key in DEFAULT_ACCOUNT_DATA[section]){
+    for (const key of ACCOUNT_DATA_SHAPE[section]){
       const rightValue = rightSection[key];
       if (!isValidAccountDataSectionValue(section, rightValue)) continue;
       if (leftSection){

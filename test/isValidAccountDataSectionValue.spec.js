@@ -3,6 +3,13 @@
 const isValidAccountDataSectionValue = require('../isValidAccountDataSectionValue');
 
 describe('isValidAccountDataSectionValue', function(){
+  context(`when section is invalid`, function(){
+    it('should throw and error', function(){
+      expect(() => { isValidAccountDataSectionValue(); }).to.throw('invalid account data section: "undefined"');
+      expect(() => { isValidAccountDataSectionValue(''); }).to.throw('invalid account data section: ""');
+      expect(() => { isValidAccountDataSectionValue('poop'); }).to.throw('invalid account data section: "poop"');
+    });
+  });
   context(`when section = 'shared_personal_data'`, function(){
     it('should check if the value is a boolean', function(){
       expect( isValidAccountDataSectionValue('shared_personal_data') ).to.be.false;
