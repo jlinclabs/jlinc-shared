@@ -89,7 +89,7 @@ module.exports = Object.freeze({
       'ASDA',
       'H&M',
       'eBay',
-      'Sainsbury\'s'
+      'Sainsburys'
     ],
     tags: [
       'T-shirts',
