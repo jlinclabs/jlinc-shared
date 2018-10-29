@@ -5,9 +5,9 @@ const isValidAccountDataSectionValue = require('./isValidAccountDataSectionValue
 
 module.exports = function normalizeAccountData(accountData) {
   const normalizedAccountData = {};
-  for (const section in ACCOUNT_DATA_SHAPE){
+  for (const [section] of ACCOUNT_DATA_SHAPE.entries()){
     normalizedAccountData[section] = {};
-    for (const key of ACCOUNT_DATA_SHAPE[section]){
+    for (const key of ACCOUNT_DATA_SHAPE.get(section)){
       let newValue = accountData && accountData[section] && accountData[section][key];
       normalizedAccountData[section][key] = isValidAccountDataSectionValue(section, newValue)
         ? newValue

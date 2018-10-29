@@ -5,12 +5,12 @@ const isValidAccountDataSectionValue = require('./isValidAccountDataSectionValue
 
 module.exports = function mergeAccountData (left, right){
   const mergedAccountData = {};
-  for (const section in ACCOUNT_DATA_SHAPE){
+  for (const [section] of ACCOUNT_DATA_SHAPE.entries()){
     const leftSection = left && left[section];
     const rightSection = right && right[section];
     if (!rightSection && !leftSection) continue;
     mergedAccountData[section] = {};
-    for (const key of ACCOUNT_DATA_SHAPE[section]){
+    for (const key of ACCOUNT_DATA_SHAPE.get(section)){
       if (rightSection){
         const rightValue = rightSection[key];
         if (isValidAccountDataSectionValue(section, rightValue)){
