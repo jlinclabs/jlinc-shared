@@ -5,12 +5,12 @@ const isValidAccountDataSectionValue = require('./isValidAccountDataSectionValue
 
 module.exports = function diffAccountData(left = {}, right = {}){
   let diff = {};
-  for (const section in ACCOUNT_DATA_SHAPE){
+  for (const [section] of ACCOUNT_DATA_SHAPE.entries()){
     const leftSection = left[section];
     const rightSection = right[section];
     if (!rightSection) continue;
     diff[section] = {};
-    for (const key of ACCOUNT_DATA_SHAPE[section]){
+    for (const key of ACCOUNT_DATA_SHAPE.get(section)){
       const rightValue = rightSection[key];
       if (!isValidAccountDataSectionValue(section, rightValue)) continue;
       if (leftSection){
