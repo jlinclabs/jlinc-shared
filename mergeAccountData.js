@@ -14,6 +14,7 @@ module.exports = function mergeAccountData (left, right){
       if (rightSection){
         const rightValue = rightSection[key];
         if (isValidAccountDataSectionValue(section, rightValue)){
+          turnOffSharingIfPersonalDataValueIsEmptyString(section, rightValue, key, mergedAccountData);
           mergedAccountData[section][key] = rightValue;
           continue;
         }
@@ -21,6 +22,7 @@ module.exports = function mergeAccountData (left, right){
       if (leftSection){
         const leftValue = leftSection[key];
         if (isValidAccountDataSectionValue(section, leftValue)){
+          turnOffSharingIfPersonalDataValueIsEmptyString(section, leftValue, key, mergedAccountData);
           mergedAccountData[section][key] = leftValue;
         }
       }
@@ -30,3 +32,9 @@ module.exports = function mergeAccountData (left, right){
   }
   return mergedAccountData;
 };
+
+function turnOffSharingIfPersonalDataValueIsEmptyString(section, value, key, mergedAccountData) {
+  if (section === 'personal_data' && value === '' && mergedAccountData['shared_personal_data'] && mergedAccountData['shared_personal_data'][key]) {
+    mergedAccountData['shared_personal_data'][key] = false;
+  }
+}
