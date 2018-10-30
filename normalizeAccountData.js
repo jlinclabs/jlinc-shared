@@ -2,6 +2,7 @@
 
 const ACCOUNT_DATA_SHAPE = require('./ACCOUNT_DATA_SHAPE');
 const isValidAccountDataSectionValue = require('./isValidAccountDataSectionValue');
+const turnOffSharingIfPersonalDataValueIsEmptyString  = require('./turnOffSharingIfPersonalDataValueIsEmptyString');
 
 module.exports = function normalizeAccountData(accountData) {
   const normalizedAccountData = {};
@@ -9,9 +10,12 @@ module.exports = function normalizeAccountData(accountData) {
     normalizedAccountData[section] = {};
     for (const key of ACCOUNT_DATA_SHAPE.get(section)){
       let newValue = accountData && accountData[section] && accountData[section][key];
-      normalizedAccountData[section][key] = isValidAccountDataSectionValue(section, newValue)
-        ? newValue
-        : defaultAccountDataSectionValue(section);
+      if (isValidAccountDataSectionValue(section, newValue)) {
+        turnOffSharingIfPersonalDataValueIsEmptyString(section, key, newValue, normalizedAccountData);
+        normalizedAccountData[section][key] = newValue;
+      } else {
+        normalizedAccountData[section][key] = defaultAccountDataSectionValue(section);
+      }
     }
   }
   return normalizedAccountData;

@@ -162,4 +162,32 @@ describe('normalizeAccountData', function(){
       });
     });
   });
+
+  context('when given a personal data field whose value is an empty string and the corresponding shared field is shared', function() {
+    it('should unshare the shared personal data field', async function(){
+      expect(
+        normalizeAccountData({
+          shared_personal_data: {
+            email: true,
+          },
+          personal_data: {
+            email: '',
+          },
+        })
+      ).to.deep.equal({
+        shared_personal_data: {
+          ...NORMALIZED_EMPTY_ACCOUNT_DATA.shared_personal_data,
+        },
+        personal_data: {
+          ...NORMALIZED_EMPTY_ACCOUNT_DATA.personal_data,
+        },
+        consents: {
+          ...NORMALIZED_EMPTY_ACCOUNT_DATA.consents,
+        },
+        communication_channels: {
+          ...NORMALIZED_EMPTY_ACCOUNT_DATA.communication_channels,
+        },
+      });
+    });
+  });
 });
