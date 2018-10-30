@@ -92,6 +92,7 @@ describe('mergeAccountData', function(){
           email: false,
           firstname: false,
           lastname: true,
+          salutation: false,
         },
         personal_data: {
           email: 'email2',
@@ -169,6 +170,27 @@ describe('mergeAccountData', function(){
             },
           },
           {},
+        )
+      ).to.deep.equal({
+        shared_personal_data: {
+          firstname: false,
+        },
+        personal_data: {
+          firstname: '',
+        }
+      });
+      expect(
+        mergeAccountData(
+          {
+            personal_data: {
+              firstname: 'firstname',
+            },
+          },
+          {
+            personal_data: {
+              firstname: '',
+            },
+          },
         )
       ).to.deep.equal({
         shared_personal_data: {
