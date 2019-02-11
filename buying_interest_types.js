@@ -12,42 +12,67 @@ module.exports = Object.freeze({
       'Honda',
       'Mercedes',
       'BMW',
-    ]
+    ],
+    tags: [
+      'Electric',
+      'Hybrid',
+      '4wd',
+      '2 door',
+      '4 door',
+      '5 door',
+      '4 seat',
+      '7 seat',
+      'SUV',
+      'Coupe',
+      'Convertible',
+    ],
   },
   Appliances: {
-    brands: []
+    brands: ['3M Co'],
+    tags: ['Refridgerator', 'Oven', 'Blender', 'Food Processor'],
   },
   Bikes: {
-    brands: []
+    brands: [],
+    tags: ['Fixed Gear', 'Tandem', 'Road Bike', 'Unicycle', 'Mountain Bike', 'Electric bike'],
   },
   Clothing: {
-    brands: ['Kate Spade']
+    brands: ['Kate Spade'],
+    tags: ['Jackets', 'Pants', 'Boots', 'Socks'],
   },
   Construction: {
-    brands: []
+    brands: [],
+    tags: ['Wood', 'Cinder Blocks', 'Aluminium Siding', 'Nails'],
   },
   'Consumer Products': {
-    brands: ['P&G','3M Co']
+    brands: ['P&G','3M Co'],
+    tags: ['Paper Towels', 'Laundry Detergent'],
   },
   Electronics: {
-    brands: ['Apple']
+    brands: ['Apple'],
+    tags: ['Computer', 'Phone', 'Television', 'Speakers'],
   },
   Food: {
-    brands: ['Ben & Jerry\'s']
+    brands: ['Ben & Jerry\'s'],
+    tags: ['Kombucha', 'Micro Greens', 'Organic Fairtrade Coffee Beans', 'Ice Cream'],
   },
   Finance: {
-    brands: []
+    brands: [],
+    tags: ['Green Investment Fund', 'Micro Loans', 'No Interest Loans', 'Universal Basic Income'],
   },
   'Heating & Cooling': {
-    brands: []
+    brands: [],
+    tags: [],
   },
   Lighting: {
-    brands: []
+    brands: [],
+    tags: ['LED Light Bulbs', 'Candles'],
   },
   Solar: {
-    brands: ['Tesla']
+    brands: ['Tesla', 'Apple'],
+    tags: ['Monocrystalline', 'Polycrystalline', 'Thin-Film', 'Amorphous Silicon', 'Biohybrid'],
   },
   Travel: {
-    brands: []
+    brands: [],
+    tags: ['Hyperloop', 'Bus', 'Train'],
   },
 });
