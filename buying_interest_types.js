@@ -33,7 +33,7 @@ module.exports = Object.freeze({
   },
   Bikes: {
     brands: [],
-    tags: ['Fixed Gear', 'Tandem', 'Road Bike', 'Unicycle', 'Mountain Bike', 'Electric bike'],
+    tags: ['Fixed Gear', 'Tandem', 'Road Bike', 'Unicycle', 'Mountain Bike', 'Electric Bike'],
   },
   Clothing: {
     brands: ['Kate Spade'],
@@ -44,7 +44,7 @@ module.exports = Object.freeze({
     tags: ['Wood', 'Cinder Blocks', 'Aluminium Siding', 'Nails'],
   },
   'Consumer Products': {
-    brands: ['P&G','3M Co'],
+    brands: ['Unilever','P&G','3M Co'],
     tags: ['Paper Towels', 'Laundry Detergent'],
   },
   Electronics: {
@@ -52,7 +52,7 @@ module.exports = Object.freeze({
     tags: ['Computer', 'Phone', 'Television', 'Speakers'],
   },
   Food: {
-    brands: ['Ben & Jerry\'s'],
+    brands: ['Ben & Jerry\'s', 'Patagonia'],
     tags: ['Kombucha', 'Micro Greens', 'Organic Fairtrade Coffee Beans', 'Ice Cream'],
   },
   Finance: {
