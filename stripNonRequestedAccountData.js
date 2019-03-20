@@ -16,13 +16,14 @@ module.exports = function stripNonRequestedAccountData(accountData, requestedDat
       continue;
     }
 
-    for (const key in strippedAccountData[section]){
-      if (requestedData[requestedDataKey][key] !== true)
-        delete strippedAccountData[section][key];
+    if (strippedAccountData[section]){
+      for (const key in strippedAccountData[section]){
+        if (requestedData[requestedDataKey][key] !== true)
+          delete strippedAccountData[section][key];
+      }
+      if (Object.keys(strippedAccountData[section]).length === 0)
+        delete strippedAccountData[section];
     }
-    if (Object.keys(strippedAccountData[section]).length === 0)
-      delete strippedAccountData[section];
   }
-  // console.log('strippedAccountData', strippedAccountData)
   return Object.keys(strippedAccountData).length === 0 ? undefined : strippedAccountData;
 };

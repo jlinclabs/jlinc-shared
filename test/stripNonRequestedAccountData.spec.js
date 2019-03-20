@@ -20,6 +20,21 @@ describe('stripNonRequestedAccountData', function(){
           {},
         )
       ).to.be.undefined;
+      expect(
+        stripNonRequestedAccountData(
+          {
+            consents: {},
+            communication_channels: {},
+            shared_personal_data: {},
+            personal_data: {},
+          },
+          {
+            personal_data: {},
+            consents: {},
+            communication_channels: {},
+          }
+        )
+      ).to.be.undefined;
     });
   });
 
