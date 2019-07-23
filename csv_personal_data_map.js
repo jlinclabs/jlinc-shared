@@ -1,0 +1,26 @@
+'use strict';
+
+module.exports = Object.freeze({
+  email: 'email',
+  mobilephone: 'sms',
+  firstname: 'first',
+  lastname: 'last',
+  salutation: 'salutation',
+  birthdate: 'birthdate',
+  gender: 'gender',
+  mailingstreet: 'street',
+  mailingcity: 'city',
+  mailingstate: 'state',
+  mailingpostalcode: 'zip',
+  mailingcountry: 'country',
+  homephone: 'homephone',
+  faxnumber: 'fax',
+  businessname: 'businessname',
+  businessindustry: 'businessindustry',
+  title: 'businessjobtitle',
+  businessstreet: 'businessstreet',
+  businesscity: 'businesscity',
+  businesscountry: 'businesscountry',
+  businesspostalcode: 'businesszip',
+  businessphone: 'businessphone',
+});
