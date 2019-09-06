@@ -7,4 +7,7 @@ module.exports = Object.freeze({
   sms_media: 'Text Message',
   social_media: 'Twitter',
   voice_media: 'Voice',
+  twitter: 'Twitter',
+  telegram: 'Telegram',
+  linkdin: 'LinkdIn',
 });

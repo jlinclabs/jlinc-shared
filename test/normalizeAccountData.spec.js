@@ -78,6 +78,9 @@ const NORMALIZED_EMPTY_ACCOUNT_DATA = deepfreeze({
     sms_media: { enabled: false },
     social_media: { enabled: false },
     voice_media: { enabled: false },
+    linkdin: { enabled: false },
+    telegram: { enabled: false },
+    twitter: { enabled: false },
   },
 });
 

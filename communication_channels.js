@@ -7,4 +7,7 @@ module.exports = Object.freeze([
   'sms_media',
   'social_media',
   'voice_media',
+  'twitter',
+  'telegram',
+  'linkdin',
 ]);
