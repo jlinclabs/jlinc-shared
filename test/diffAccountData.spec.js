@@ -69,27 +69,43 @@ describe('diffAccountData', function(){
     });
   });
 
-  context('when given invalid key', function(){
-    it('should ignore those keys', function(){
+  context('when given custom personal data key', function(){
+    it('should work with those keys', function(){
       expect(
         diffAccountData(
           {
             badKey: 42,
             shared_personal_data: {
-              notForKeeps: 'xx',
+              anotherBadKey: false,
+              "_Shoe Size": false,
+              "_Favorite Color": false,
+            },
+            personal_data: {
+              "_Favorite Color": 'Purple',
+              email: 'alice@example.com',
+              "_Car Model": 'Ford',
             },
           },
           {
             anotherBadKey: 55,
+            shared_personal_data: {
+              "_Favorite Color": true,
+              "_Car Model": false,
+            },
             personal_data: {
-              fooBar: 'fb',
+              "_Favorite Color": 'Brown',
               email: 'alice@example.com',
+              "_Car Model": 'Ford',
             },
           },
         )
       ).to.deep.equal({
+        shared_personal_data: {
+          "_Favorite Color": true,
+          "_Car Model": false,
+        },
         personal_data: {
-          email: 'alice@example.com',
+          "_Favorite Color": 'Brown',
         },
       });
 
@@ -113,12 +129,20 @@ describe('diffAccountData', function(){
             shared_personal_data: {
               notForKeeps: 'xx',
               firstname: false,
+              "_Favorite Color": true,
+            },
+            personal_data: {
+              "_Favorite Color": 'organge',
             },
           },
         )
       ).to.deep.equal({
         shared_personal_data: {
           firstname: false,
+          "_Favorite Color": true,
+        },
+        personal_data: {
+          "_Favorite Color": 'organge',
         },
       });
     });

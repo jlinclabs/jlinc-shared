@@ -2,6 +2,7 @@
 
 const ACCOUNT_DATA_SHAPE = require('./ACCOUNT_DATA_SHAPE');
 const isValidAccountDataSectionValue = require('./isValidAccountDataSectionValue');
+const extractCustomPersonalDataKeys = require('./extractCustomPersonalDataKeys');
 
 module.exports = function diffAccountData(left = {}, right = {}){
   let diff = {};
@@ -10,7 +11,11 @@ module.exports = function diffAccountData(left = {}, right = {}){
     const rightSection = right[section];
     if (!rightSection) continue;
     diff[section] = {};
-    for (const key of ACCOUNT_DATA_SHAPE.get(section)){
+    const keys = [...ACCOUNT_DATA_SHAPE.get(section)];
+    if (section === 'personal_data' || section === 'shared_personal_data'){
+      keys.push(...extractCustomPersonalDataKeys(leftSection, rightSection));
+    }
+    for (const key of keys){
       const rightValue = rightSection[key];
       if (!isValidAccountDataSectionValue(section, rightValue)) continue;
       if (leftSection){

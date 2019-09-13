@@ -3,6 +3,7 @@
 const ACCOUNT_DATA_SHAPE = require('./ACCOUNT_DATA_SHAPE');
 const isValidAccountDataSectionValue = require('./isValidAccountDataSectionValue');
 const turnOffSharingIfPersonalDataValueIsEmptyString  = require('./turnOffSharingIfPersonalDataValueIsEmptyString');
+const extractCustomPersonalDataKeys = require('./extractCustomPersonalDataKeys');
 
 module.exports = function mergeAccountData (left, right){
   const mergedAccountData = {};
@@ -11,7 +12,12 @@ module.exports = function mergeAccountData (left, right){
     const rightSection = right && right[section];
     if (!rightSection && !leftSection) continue;
     mergedAccountData[section] = {};
-    for (const key of ACCOUNT_DATA_SHAPE.get(section)){
+
+    const keys = [...ACCOUNT_DATA_SHAPE.get(section)];
+    if (section === 'personal_data' || section === 'shared_personal_data'){
+      keys.push(...extractCustomPersonalDataKeys(leftSection, rightSection));
+    }
+    for (const key of keys){
       if (rightSection){
         const rightValue = rightSection[key];
         if (isValidAccountDataSectionValue(section, rightValue)){

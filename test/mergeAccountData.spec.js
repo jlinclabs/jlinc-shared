@@ -46,10 +46,12 @@ describe('mergeAccountData', function(){
               email: true,
               firstname: false,
               salutation: null,
+              '_Favorite Color': true,
             },
             personal_data: {
               email: 'email',
               firstname: '',
+              '_Favorite Color': 'Purple',
             },
             consents: {
               'Brand Marketing': true,
@@ -68,12 +70,16 @@ describe('mergeAccountData', function(){
               email: false,
               firstname: null,
               lastname: true,
+              '_Shoe Size': true,
+              '_Favorite Color': false,
             },
             personal_data: {
               email: 'email2',
               firstname: 'firstname2',
               lastname: 'lastname2',
               salutation: '',
+              '_Shoe Size': '12',
+              '_Favorite Color': 'Orange',
             },
             consents: {
               'Brand Marketing': false,
@@ -93,12 +99,16 @@ describe('mergeAccountData', function(){
           firstname: false,
           lastname: true,
           salutation: false,
+          '_Favorite Color': false,
+          '_Shoe Size': true,
         },
         personal_data: {
           email: 'email2',
           firstname: 'firstname2',
           lastname: 'lastname2',
           salutation: '',
+          '_Favorite Color': 'Orange',
+          '_Shoe Size': '12',
         },
         consents: {
           'Brand Marketing': false,

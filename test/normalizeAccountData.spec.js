@@ -92,9 +92,11 @@ describe('normalizeAccountData', function(){
       normalizeAccountData({
         shared_personal_data: {
           birthdate: true,
+          '_Favorite Color': false,
         },
         personal_data: {
           email: 'alice@example.com',
+          '_Favorite Color': 'Purple',
         },
         consents: {
           'Brand Marketing': true,
@@ -107,10 +109,12 @@ describe('normalizeAccountData', function(){
       shared_personal_data: {
         ...NORMALIZED_EMPTY_ACCOUNT_DATA.shared_personal_data,
         birthdate: true,
+        '_Favorite Color': false,
       },
       personal_data: {
         ...NORMALIZED_EMPTY_ACCOUNT_DATA.personal_data,
         email: 'alice@example.com',
+        '_Favorite Color': 'Purple',
       },
       consents: {
         ...NORMALIZED_EMPTY_ACCOUNT_DATA.consents,
@@ -131,10 +135,12 @@ describe('normalizeAccountData', function(){
           shared_personal_data: {
             IGNORED_KEY: 'this is stripped and ignored',
             birthdate: true,
+            '_Favorite Color': false,
           },
           personal_data: {
             email: 'alice@example.com',
-            __notIncluded: ':D',
+            '_Favorite Color': 'Purple',
+            notIncluded: ':D',
           },
           consents: {
             anotherIgnoredKey: 'not to be included',
@@ -149,10 +155,12 @@ describe('normalizeAccountData', function(){
         shared_personal_data: {
           ...NORMALIZED_EMPTY_ACCOUNT_DATA.shared_personal_data,
           birthdate: true,
+          '_Favorite Color': false,
         },
         personal_data: {
           ...NORMALIZED_EMPTY_ACCOUNT_DATA.personal_data,
           email: 'alice@example.com',
+          '_Favorite Color': 'Purple',
         },
         consents: {
           ...NORMALIZED_EMPTY_ACCOUNT_DATA.consents,
