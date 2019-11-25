@@ -236,7 +236,7 @@ describe('stageAccountDataChanges', function(){
             'Discount Offers': true,
           },
           communication_channels: {
-            social_media: { enabled: true },
+            twitter: { enabled: true },
           },
         },
       })

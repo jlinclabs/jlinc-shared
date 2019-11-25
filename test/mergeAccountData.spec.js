@@ -88,7 +88,7 @@ describe('mergeAccountData', function(){
             communication_channels: {
               email_media: { enabled: false },
               fax_media: null,
-              social_media: { enabled: true },
+              twitter: { enabled: false },
               voice_media: {},
             },
           },
@@ -116,7 +116,7 @@ describe('mergeAccountData', function(){
         communication_channels: {
           email_media: { enabled: false },
           fax_media: { enabled: false },
-          social_media: { enabled: true },
+          twitter: { enabled: false },
         },
       });
     });
