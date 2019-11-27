@@ -90,6 +90,7 @@ describe('ACCOUNT_DATA_SHAPE', function() {
           'Location Tracking',
           'Online Tracking',
           'Cross-Border Transfers',
+          'Ok to sell my data',
         ]
       ],
       [

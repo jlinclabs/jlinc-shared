@@ -80,6 +80,7 @@ const NORMALIZED_EMPTY_ACCOUNT_DATA = deepfreeze({
     'Location Tracking': false,
     'Online Tracking': false,
     'Cross-Border Transfers': false,
+    'Ok to sell my data': false,
   },
   communication_channels: {
     email_media: { enabled: false },
