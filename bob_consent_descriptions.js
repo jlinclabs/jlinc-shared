@@ -18,4 +18,5 @@ module.exports = Object.freeze({
   'Location Tracking': 'We may track the user\'s location to provide services to them at or relevant to those locations.',
   'Online Tracking': 'We may track the user\'s online activities or preferences to provide a customized experience.',
   'Cross-Border Transfers': 'We may move the user\'s data to other countries for processing or storage.',
+  'Ok to sell my data': 'We may sell the user\’s data for online ads, tracking and marketing, or any other purpose at our sole discretion.',
 });

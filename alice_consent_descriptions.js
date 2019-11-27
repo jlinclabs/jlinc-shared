@@ -18,4 +18,5 @@ module.exports = Object.freeze({
   'Location Tracking': '[Organisation] may track your location to provide services to you at or relevant to those locations.',
   'Online Tracking': '[Organisation] may track your online activities or preferences to provide a customized experience.',
   'Cross-Border Transfers': '[Organisation] may move your data to other countries for processing or storage.',
+  'Ok to sell my data': '[Organisation] may sell my data for online ads, tracking and marketing, or any other purpose at their sole discretion, as has been the default situation on the Internet. Under CCPA I can withhold this permission from companies operating in CA by setting this switch to OFF.',
 });
