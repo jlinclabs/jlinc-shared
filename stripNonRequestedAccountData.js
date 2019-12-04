@@ -21,8 +21,6 @@ module.exports = function stripNonRequestedAccountData(accountData, requestedDat
         if (requestedData[requestedDataKey][key] !== true)
           delete strippedAccountData[section][key];
       }
-      if (Object.keys(strippedAccountData[section]).length === 0)
-        delete strippedAccountData[section];
     }
   }
   return Object.keys(strippedAccountData).length === 0 ? undefined : strippedAccountData;

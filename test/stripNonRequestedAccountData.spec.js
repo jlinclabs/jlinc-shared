@@ -20,6 +20,7 @@ describe('stripNonRequestedAccountData', function(){
           {},
         )
       ).to.be.undefined;
+
       expect(
         stripNonRequestedAccountData(
           {
@@ -101,6 +102,39 @@ describe('stripNonRequestedAccountData', function(){
     });
   });
 
+  context('when the organization requests only custom data fields', function(){
+    it('should strip out all non requested data', function(){
+      expect(
+        stripNonRequestedAccountData(
+          normalizeAccountData({
+            shared_personal_data: {
+              "_Shoe Size": true,
+              "_Favorite Color": false,
+              "_Nickname": true,
+            },
+            personal_data: {
+              "_Shoe Size": '15',
+              "_Favorite Color": 'red',
+              "_Nickname": 'The Hammer',
+            }
+          }),
+          {
+            personal_data: {
+              "_Shoe Size": true,
+            },
+          }
+        )
+      ).to.deep.equal({
+        shared_personal_data: {
+          "_Shoe Size": true,
+        },
+        personal_data: {
+          "_Shoe Size": '15',
+        },
+      });
+    });
+  });
+
   it('should strip out non requested accound data keys', function(){
     const getAccountData = () => ({
       shared_personal_data: {
@@ -147,6 +181,8 @@ describe('stripNonRequestedAccountData', function(){
         }
       )
     ).to.deep.equal({
+      shared_personal_data: {
+      },
       personal_data: {
         email: 'morty@sanchez.me',
       },
@@ -179,6 +215,8 @@ describe('stripNonRequestedAccountData', function(){
         }
       )
     ).to.deep.equal({
+      shared_personal_data: {
+      },
       personal_data: {
         firstname: "Morty",
       },
