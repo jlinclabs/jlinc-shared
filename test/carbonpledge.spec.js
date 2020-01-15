@@ -13,16 +13,17 @@ describe('carbonpledge', function() {
       expect(isMoreAggressivePledge(undefined, {})).to.be.true;
 
       const permutations = [];
-      PLEDGE_TYPES.forEach(pledgeType => {
-        [...PLEDGE_YEARS].reverse().forEach(pledgeYear => {
+      PLEDGE_YEARS.forEach(pledgeYear => {
+        [...PLEDGE_TYPES].reverse().forEach(pledgeType => {
           permutations.push({ pledgeType, pledgeYear });
         });
       });
+
       permutations.forEach((left, leftIndex) => {
         permutations.forEach((right, rightIndex) => {
           expect(
             isMoreAggressivePledge(left, right)
-          ).to.be[ leftIndex < rightIndex ? 'true' : 'false'];
+          ).to.be[ leftIndex <= rightIndex ? 'false' : 'true'];
         });
       });
     });

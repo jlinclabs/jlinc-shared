@@ -20,16 +20,14 @@ function isValidPledgeType(pledgeType) {
 
 function isMoreAggressivePledge(existingPledge, newPledge){
   if (!existingPledge) return true;
-  const newTypeIndex = PLEDGE_TYPES.indexOf(newPledge.pledgeType);
+  const existingYearIndex = PLEDGE_YEARS.indexOf(+existingPledge.pledgeYear);
+  const newYearIndex = PLEDGE_YEARS.indexOf(+newPledge.pledgeYear);
   const existingTypeIndex = PLEDGE_TYPES.indexOf(existingPledge.pledgeType);
-  const newYearIndex = PLEDGE_YEARS.indexOf(newPledge.pledgeYear);
-  const existingYearIndex = PLEDGE_YEARS.indexOf(existingPledge.pledgeYear);
+  const newTypeIndex = PLEDGE_TYPES.indexOf(newPledge.pledgeType);
   return (
-    newTypeIndex > existingTypeIndex ||
-    (
-      existingTypeIndex === newTypeIndex &&
-      newYearIndex < existingYearIndex
-    )
+    newYearIndex < existingYearIndex ||
+    newYearIndex === existingYearIndex &&
+    newTypeIndex > existingTypeIndex
   );
 }
 
