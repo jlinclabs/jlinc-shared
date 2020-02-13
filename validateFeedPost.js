@@ -9,7 +9,7 @@ module.exports = function validateFeedPost({post, assetServerUrl}) {
   if (!isUndefinedOrString(body)) throw new Error('body must be a string');
   if (!isUndefinedOrString(mediaUrl)) throw new Error('mediaUrl must be a string');
   if (!isUndefinedOrString(mediaMimeType)) throw new Error('mediaMimeType must be a string');
-  if (isEmpty(title) && isEmpty(body) && isEmpty(mediaUrl))
+  if (!post.repostUid && isEmpty(title) && isEmpty(body) && isEmpty(mediaUrl))
     throw new Error('title, body and mediaUrl cannot all be blank');
 
   if (mediaUrl && !assetServerUrl) throw new Error('assetServerUrl is required');
