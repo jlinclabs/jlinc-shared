@@ -36,7 +36,6 @@ function organizationFeedPostRecordToPost(record){
     feedOwnerApikey: record.feed_owner_apikey,
     createdAt: record.created_at,
     myPost: !!record.my_post,
-    updatedAt: record.updated_at,
   };
 
   [
@@ -58,6 +57,7 @@ function organizationFeedPostRecordToPost(record){
       post[prop] = record[column];
   });
 
+  if (record.updated_at) post.hiddenAt  = record.updated_at;
   if (record.hidden_at)  post.hiddenAt  = record.hidden_at;
   if (record.deleted_at) post.deletedAt = record.deleted_at;
 
