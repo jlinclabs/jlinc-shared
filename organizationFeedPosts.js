@@ -57,7 +57,7 @@ function organizationFeedPostRecordToPost(record){
       post[prop] = record[column];
   });
 
-  if (record.updated_at) post.hiddenAt  = record.updated_at;
+  if (record.updated_at) post.updatedAt  = record.updated_at;
   if (record.hidden_at)  post.hiddenAt  = record.hidden_at;
   if (record.deleted_at) post.deletedAt = record.deleted_at;
 
