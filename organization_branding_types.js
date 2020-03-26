@@ -1,3 +1,3 @@
 'use strict';
 
-module.exports = Object.freeze(['consumer', 'business', 'network']);
+module.exports = Object.freeze(['consumer', 'business']);
