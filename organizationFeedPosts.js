@@ -35,7 +35,6 @@ function organizationFeedPostRecordToPost(record){
     uid: record.feed_post_uid,
     feedOwnerApikey: record.feed_owner_apikey,
     createdAt: record.created_at,
-    myPost: !!record.my_post,
   };
 
   [
