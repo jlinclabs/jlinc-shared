@@ -28,6 +28,7 @@
   },
   "dependencies": {},
   "bin": {
-    "lint-queries-and-commands": "./lintQueriesAndCommands.js"
+    "lint-queries-and-commands": "./lintQueriesAndCommands.js",
+    "jlinc-generate": "./generate/index.js"
   }
 }
