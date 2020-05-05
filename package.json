@@ -26,5 +26,8 @@
     "mocha": "^5.2.0",
     "nyc": "^13.0.1"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "bin": {
+    "lint-queries-and-commands": "./lintQueriesAndCommands.js"
+  }
 }
