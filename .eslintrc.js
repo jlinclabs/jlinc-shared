@@ -25,7 +25,11 @@ module.exports = {
     "strict": [2, "global"],
     "no-console": "error",
     "no-unused-vars": "error",
-    "space-before-function-paren": "off",
+    "space-before-function-paren": ["error", {
+      "anonymous": "never",
+      "named": "never",
+      "asyncArrow": "always",
+    }],
     "object-curly-spacing": "off",
     "comma-dangle": "off",
     "space-before-blocks": "off",

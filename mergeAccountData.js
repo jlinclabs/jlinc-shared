@@ -5,7 +5,7 @@ const isValidAccountDataSectionValue = require('./isValidAccountDataSectionValue
 const turnOffSharingIfPersonalDataValueIsEmptyString  = require('./turnOffSharingIfPersonalDataValueIsEmptyString');
 const extractCustomPersonalDataKeys = require('./extractCustomPersonalDataKeys');
 
-module.exports = function mergeAccountData (left, right){
+module.exports = function mergeAccountData(left, right){
   const mergedAccountData = {};
   for (const [section] of ACCOUNT_DATA_SHAPE.entries()){
     const leftSection = left && left[section];
