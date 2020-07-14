@@ -30,6 +30,9 @@
     "sodium": "^3.0.2",
     "urlsafe-base64": "^1.0.0"
   },
+  "peerDependencies": {
+    "request-promise": "^4.2.2"
+  },
   "bin": {
     "lint-queries-and-commands": "./lintQueriesAndCommands.js",
     "jlinc-generate": "./generate/index.js"
