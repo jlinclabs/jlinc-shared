@@ -15,6 +15,6 @@
 */
 
 module.exports = Object.freeze({
-  singular: 'Node',
-  plural: 'Nodes',
+  singular: 'Hub',
+  plural: 'Hubs',
 });
