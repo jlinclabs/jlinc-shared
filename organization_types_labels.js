@@ -10,4 +10,5 @@ module.exports = Object.freeze({
   'academic_entity': 'Academic / Educational',
   'government': 'Government / Political',
   'corporation': 'Corporate Enterprise',
+  'sole_proprietorship': 'Sole Proprietorship',
 });
