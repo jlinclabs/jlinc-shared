@@ -6,14 +6,6 @@ module.exports = Object.freeze({
   ]),
   'Topical': Object.freeze([
     'individual_thought_leader',
-    'informal_organization',
-    'small_business',
-    'ngo',
-    'association',
-    'academic_entity',
-    'faithbased_religious',
-    'government',
-    'corporation',
   ]),
   'Organizational': Object.freeze([
     'sole_proprietorship',
