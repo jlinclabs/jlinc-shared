@@ -121,7 +121,7 @@ function isDateString(date){
 }
 
 function isArrayOfNonEmptyStrings(array){
-  return array.every(member => typeof member === 'string' && member.length > 1);
+  return array.every(member => typeof member === 'string' && member.length > 0);
 }
 
 module.exports = {

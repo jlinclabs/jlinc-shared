@@ -73,7 +73,7 @@ describe('buyingInterests', function() {
         industry: 'automobiles',
         currency: '$',
         brands: ['myada','porche'],
-        tags: new Set(['red', '4 door']),
+        tags: new Set(['X', '4 door']),
         created: new Date('1982-08-23'),
       })).to.deep.equal({
         uid: 'thisisafakeuuid',
@@ -88,7 +88,7 @@ describe('buyingInterests', function() {
         industry: 'automobiles',
         currency: '$',
         brands: ['myada','porche'],
-        tags: ['red', '4 door'],
+        tags: ['X', '4 door'],
         created: new Date('1982-08-23'),
       });
     });
@@ -145,48 +145,48 @@ describe('buyingInterests', function() {
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
         currency: '£',
-        tags: ['red'],
+        tags: ['X'],
       })).to.not.throw();
 
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
         currency: '£',
-        tags: ['red'],
+        tags: ['X'],
         price_low: '$10.00',
       })).to.throw(Error, `Minimum price must be a positive integer`);
 
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
         currency: '£',
-        tags: ['red'],
+        tags: ['X'],
         price_low: '10.00',
       })).to.throw(Error, `Minimum price must be a positive integer`);
 
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
         currency: '£',
-        tags: ['red'],
+        tags: ['X'],
         price_low: -11,
       })).to.throw(Error, `Minimum price must be a positive integer`);
 
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
         currency: '£',
-        tags: ['red'],
+        tags: ['X'],
         price_low: 11.34,
       })).to.throw(Error, `Minimum price must be a positive integer`);
 
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
         currency: '£',
-        tags: ['red'],
+        tags: ['X'],
         price_low: 1134,
       })).to.not.throw();
 
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
         currency: '£',
-        tags: ['red'],
+        tags: ['X'],
         price_low: 1134,
         price_high: -11,
       })).to.throw(Error, `Maximum price must be a positive integer`);
@@ -194,7 +194,7 @@ describe('buyingInterests', function() {
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
         currency: '£',
-        tags: ['red'],
+        tags: ['X'],
         price_low: 1134,
         price_high: 11.34,
       })).to.throw(Error, `Maximum price must be a positive integer`);
@@ -202,7 +202,7 @@ describe('buyingInterests', function() {
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
         currency: '£',
-        tags: ['red'],
+        tags: ['X'],
         price_low: 1134,
         price_high: 823,
       })).to.throw(Error, `Maximum price must be greater than or equal to Minimum price`);
@@ -210,7 +210,7 @@ describe('buyingInterests', function() {
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
         currency: '£',
-        tags: ['red'],
+        tags: ['X'],
         price_low: 1134,
         price_high: 1134,
       })).to.not.throw();
@@ -218,77 +218,77 @@ describe('buyingInterests', function() {
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
         currency: '£',
-        tags: ['red'],
+        tags: ['X'],
         beginning_date: new Date,
       })).to.throw(Error, `Beginning date must be a valid date string`);
 
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
         currency: '£',
-        tags: ['red'],
+        tags: ['X'],
         beginning_date: 232323,
       })).to.throw(Error, `Beginning date must be a valid date string`);
 
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
         currency: '£',
-        tags: ['red'],
+        tags: ['X'],
         beginning_date: 'yesturday',
       })).to.throw(Error, `Beginning date must be a valid date string`);
 
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
         currency: '£',
-        tags: ['red'],
+        tags: ['X'],
         beginning_date: '1982-99-99',
       })).to.throw(Error, `Beginning date must be a valid date string`);
 
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
         currency: '£',
-        tags: ['red'],
+        tags: ['X'],
         beginning_date: '1982-08-99',
       })).to.throw(Error, `Beginning date must be a valid date string`);
 
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
         currency: '£',
-        tags: ['red'],
+        tags: ['X'],
         beginning_date: '1982-08-23',
       })).to.not.throw();
 
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
         currency: '£',
-        tags: ['red'],
+        tags: ['X'],
         end_date: 'yesturday',
       })).to.throw(Error, `End date must be a valid date string`);
 
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
         currency: '£',
-        tags: ['red'],
+        tags: ['X'],
         end_date: '1982-99-99',
       })).to.throw(Error, `End date must be a valid date string`);
 
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
         currency: '£',
-        tags: ['red'],
+        tags: ['X'],
         end_date: '1982-08-99',
       })).to.throw(Error, `End date must be a valid date string`);
 
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
         currency: '£',
-        tags: ['red'],
+        tags: ['X'],
         end_date: '1982-08-23',
       })).to.not.throw();
 
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
         currency: '£',
-        tags: ['red'],
+        tags: ['X'],
         beginning_date: '1982-08-23',
         end_date: '1982-08-22',
       })).to.throw(Error, `End date must greater than or equal to Beginning date`);
@@ -296,35 +296,35 @@ describe('buyingInterests', function() {
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
         currency: '£',
-        tags: ['red'],
+        tags: ['X'],
         location: '',
       })).to.throw(Error, `Location must be 4 or more characters`);
 
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
         currency: '£',
-        tags: ['red'],
+        tags: ['X'],
         location: 'my feet',
       })).to.not.throw();
 
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
         currency: '£',
-        tags: ['red'],
+        tags: ['X'],
         brands: '',
       })).to.throw(Error, `Brands must be an array`);
 
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
         currency: '£',
-        tags: ['red'],
+        tags: ['X'],
         brands: [123],
       })).to.throw(Error, `Brands can only be non-empty strings`);
 
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
         currency: '£',
-        tags: ['red'],
+        tags: ['X'],
         brands: ['Nike'],
       })).to.not.throw();
 
