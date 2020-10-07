@@ -94,53 +94,86 @@ describe('buyingInterests', function() {
     });
   });
   describe('validateBuyingInterest', function() {
-    it('should validate a buying interest JSON object', function(){
-      // this help simulates being given an object parsed from json
-      const validateBuyingInterest = object =>
-        buyingInterests.validateBuyingInterest(object ? JSON.parse(JSON.stringify(object)) : undefined);
+    // this help simulates being given an object parsed from json
+    const validateBuyingInterest = object =>
+      buyingInterests.validateBuyingInterest(object ? JSON.parse(JSON.stringify(object)) : undefined);
 
-      expect(() => validateBuyingInterest()).to.throw(Error, `buyingInterest required`);
+    const generateValidBuyingInterest = () => ({
+      description: 'A new pair of red shoes.',
+      currency: '$',
+      tags: ['red', 'blue'],
+      brands: ['Nike'],
+    });
 
-      expect(() => validateBuyingInterest(452)).to.throw(Error, `buyingInterest must be an object`);
+    beforeEach(() => {
+      expect(() => {
+        validateBuyingInterest(generateValidBuyingInterest());
+      }).to.not.throw().and.be.true;
+    });
 
-      expect(() => validateBuyingInterest({})).to.throw(Error, `Description cannot be blank`);
+    it('should allow tags with one or more character', function(){
+      expect(() =>
+        validateBuyingInterest({
+          ...generateValidBuyingInterest(),
+          tags: ['x'],
+        })
+      ).to.not.throw();
+    });
+
+
+    it('should not allow empty tags', function(){
+      expect(() =>
+        validateBuyingInterest({
+          ...generateValidBuyingInterest(),
+          tags: ['x', '', 'y'],
+        })
+      ).to.throw('Tags can only be non-empty strings');
+    });
+
+    it('should validate a buying interest', function(){
+
+      expect(() => validateBuyingInterest()).to.throw(`buyingInterest required`);
+
+      expect(() => validateBuyingInterest(452)).to.throw(`buyingInterest must be an object`);
+
+      expect(() => validateBuyingInterest({})).to.throw(`Description cannot be blank`);
 
       expect(() => validateBuyingInterest({
         description: 'shoe',
-      })).to.throw(Error, `Description must at least 10 characaters long`);
+      })).to.throw(`Description must at least 10 characaters long`);
 
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
-      })).to.throw(Error, `Currency must be one of $,€,£,¥`);
+      })).to.throw(`Currency must be one of $,€,£,¥`);
 
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
         currency: '£',
-      })).to.throw(Error, `Tags must be an array`);
+      })).to.throw(`Tags must be an array`);
 
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
         currency: '£',
         tags: [],
-      })).to.throw(Error, `At least one tag is required`);
+      })).to.throw(`At least one tag is required`);
 
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
         currency: '£',
         tags: [123],
-      })).to.throw(Error, `Tags can only be non-empty strings`);
+      })).to.throw(`Tags can only be non-empty strings`);
 
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
         currency: '£',
         tags: [''],
-      })).to.throw(Error, `Tags can only be non-empty strings`);
+      })).to.throw(`Tags can only be non-empty strings`);
 
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
         currency: '£',
         tags: [null],
-      })).to.throw(Error, `Tags can only be non-empty strings`);
+      })).to.throw(`Tags can only be non-empty strings`);
 
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
@@ -153,28 +186,28 @@ describe('buyingInterests', function() {
         currency: '£',
         tags: ['X'],
         price_low: '$10.00',
-      })).to.throw(Error, `Minimum price must be a positive integer`);
+      })).to.throw(`Minimum price must be a positive integer`);
 
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
         currency: '£',
         tags: ['X'],
         price_low: '10.00',
-      })).to.throw(Error, `Minimum price must be a positive integer`);
+      })).to.throw(`Minimum price must be a positive integer`);
 
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
         currency: '£',
         tags: ['X'],
         price_low: -11,
-      })).to.throw(Error, `Minimum price must be a positive integer`);
+      })).to.throw(`Minimum price must be a positive integer`);
 
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
         currency: '£',
         tags: ['X'],
         price_low: 11.34,
-      })).to.throw(Error, `Minimum price must be a positive integer`);
+      })).to.throw(`Minimum price must be a positive integer`);
 
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
@@ -189,7 +222,7 @@ describe('buyingInterests', function() {
         tags: ['X'],
         price_low: 1134,
         price_high: -11,
-      })).to.throw(Error, `Maximum price must be a positive integer`);
+      })).to.throw(`Maximum price must be a positive integer`);
 
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
@@ -197,7 +230,7 @@ describe('buyingInterests', function() {
         tags: ['X'],
         price_low: 1134,
         price_high: 11.34,
-      })).to.throw(Error, `Maximum price must be a positive integer`);
+      })).to.throw(`Maximum price must be a positive integer`);
 
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
@@ -205,7 +238,7 @@ describe('buyingInterests', function() {
         tags: ['X'],
         price_low: 1134,
         price_high: 823,
-      })).to.throw(Error, `Maximum price must be greater than or equal to Minimum price`);
+      })).to.throw(`Maximum price must be greater than or equal to Minimum price`);
 
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
@@ -220,35 +253,35 @@ describe('buyingInterests', function() {
         currency: '£',
         tags: ['X'],
         beginning_date: new Date,
-      })).to.throw(Error, `Beginning date must be a valid date string`);
+      })).to.throw(`Beginning date must be a valid date string`);
 
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
         currency: '£',
         tags: ['X'],
         beginning_date: 232323,
-      })).to.throw(Error, `Beginning date must be a valid date string`);
+      })).to.throw(`Beginning date must be a valid date string`);
 
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
         currency: '£',
         tags: ['X'],
         beginning_date: 'yesturday',
-      })).to.throw(Error, `Beginning date must be a valid date string`);
+      })).to.throw(`Beginning date must be a valid date string`);
 
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
         currency: '£',
         tags: ['X'],
         beginning_date: '1982-99-99',
-      })).to.throw(Error, `Beginning date must be a valid date string`);
+      })).to.throw(`Beginning date must be a valid date string`);
 
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
         currency: '£',
         tags: ['X'],
         beginning_date: '1982-08-99',
-      })).to.throw(Error, `Beginning date must be a valid date string`);
+      })).to.throw(`Beginning date must be a valid date string`);
 
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
@@ -262,21 +295,21 @@ describe('buyingInterests', function() {
         currency: '£',
         tags: ['X'],
         end_date: 'yesturday',
-      })).to.throw(Error, `End date must be a valid date string`);
+      })).to.throw(`End date must be a valid date string`);
 
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
         currency: '£',
         tags: ['X'],
         end_date: '1982-99-99',
-      })).to.throw(Error, `End date must be a valid date string`);
+      })).to.throw(`End date must be a valid date string`);
 
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
         currency: '£',
         tags: ['X'],
         end_date: '1982-08-99',
-      })).to.throw(Error, `End date must be a valid date string`);
+      })).to.throw(`End date must be a valid date string`);
 
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
@@ -291,14 +324,14 @@ describe('buyingInterests', function() {
         tags: ['X'],
         beginning_date: '1982-08-23',
         end_date: '1982-08-22',
-      })).to.throw(Error, `End date must greater than or equal to Beginning date`);
+      })).to.throw(`End date must greater than or equal to Beginning date`);
 
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
         currency: '£',
         tags: ['X'],
         location: '',
-      })).to.throw(Error, `Location must be 4 or more characters`);
+      })).to.throw(`Location must be 4 or more characters`);
 
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
@@ -312,14 +345,14 @@ describe('buyingInterests', function() {
         currency: '£',
         tags: ['X'],
         brands: '',
-      })).to.throw(Error, `Brands must be an array`);
+      })).to.throw(`Brands must be an array`);
 
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
         currency: '£',
         tags: ['X'],
         brands: [123],
-      })).to.throw(Error, `Brands can only be non-empty strings`);
+      })).to.throw(`Brands can only be non-empty strings`);
 
       expect(() => validateBuyingInterest({
         description: 'A new pair of red shoes.',
