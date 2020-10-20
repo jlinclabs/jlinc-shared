@@ -24,7 +24,9 @@
     "eslint": "^6.2.2",
     "istanbul": "^0.4.5",
     "mocha": "^5.2.0",
-    "nyc": "^13.0.1"
+    "nyc": "^13.0.1",
+    "sinon": "^4.5.0",
+    "sinon-chai": "^3.0.0"
   },
   "dependencies": {
     "sodium": "^3.0.2",
