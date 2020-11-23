@@ -1,6 +1,6 @@
 'use strict';
 
-const ACCOUNT_DATA_SHAPE = require('../ACCOUNT_DATA_SHAPE');
+const ACCOUNT_DATA_SHAPE = require('./ACCOUNT_DATA_SHAPE');
 
 describe('ACCOUNT_DATA_SHAPE', function() {
   it('should be this', function(){

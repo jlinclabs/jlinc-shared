@@ -1,6 +1,6 @@
 'use strict';
 
-const PNFO = require('../PNFO');
+const PNFO = require('./PNFO');
 
 describe('PNFO', function(){
   it('should be an immutable object', function(){

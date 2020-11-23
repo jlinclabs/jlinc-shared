@@ -1,7 +1,7 @@
 'use strict';
 
-const normalizeAccountData = require('../normalizeAccountData');
-const stripNonRequestedAccountData = require('../stripNonRequestedAccountData');
+const normalizeAccountData = require('./normalizeAccountData');
+const stripNonRequestedAccountData = require('./stripNonRequestedAccountData');
 
 describe('stripNonRequestedAccountData', function(){
 

@@ -1,7 +1,7 @@
 'use strict';
 
-const diffAccountData = require('../diffAccountData');
-const normalizeAccountData = require('../normalizeAccountData');
+const diffAccountData = require('./diffAccountData');
+const normalizeAccountData = require('./normalizeAccountData');
 
 describe('diffAccountData', function(){
   context('when given matching objects', function(){

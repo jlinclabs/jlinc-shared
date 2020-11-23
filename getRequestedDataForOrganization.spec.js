@@ -1,6 +1,6 @@
 'use strict';
 
-const getRequestedDataForOrganization = require('../getRequestedDataForOrganization');
+const getRequestedDataForOrganization = require('./getRequestedDataForOrganization');
 
 describe('getRequestedDataForOrganization', function(){
   it('should extract requested data from an organization', function(){

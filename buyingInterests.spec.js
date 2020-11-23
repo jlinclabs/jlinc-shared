@@ -1,6 +1,6 @@
 'use strict';
 
-const buyingInterests = require('../buyingInterests');
+const buyingInterests = require('./buyingInterests');
 
 describe('buyingInterests', function() {
   it('should have helper functions', function(){

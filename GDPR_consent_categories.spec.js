@@ -1,7 +1,7 @@
 'use strict';
 
-const GDPR_CONSENT_CATEGORIES = require('../GDPR_consent_categories');
-const GDPR_CONSENTS = require('../GDPR_consents');
+const GDPR_CONSENT_CATEGORIES = require('./GDPR_consent_categories');
+const GDPR_CONSENTS = require('./GDPR_consents');
 
 describe('GDPR_consent_categories', function() {
   it('should contain each consent only once and in the same order', function() {

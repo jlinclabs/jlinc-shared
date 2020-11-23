@@ -1,7 +1,7 @@
 'use strict';
 
 const deepfreeze = require('deep-freeze-node');
-const normalizeAccountData = require('../normalizeAccountData');
+const normalizeAccountData = require('./normalizeAccountData');
 
 const NORMALIZED_EMPTY_ACCOUNT_DATA = deepfreeze({
   shared_personal_data: {

@@ -8,7 +8,7 @@ const {
   postIsMissingContent,
   validateNewFeedPost,
   validateFeedPostContents,
-} = require('../feedPosts');
+} = require('./feedPosts');
 
 describe('feedPosts', function(){
   describe('validateFeedPost', function(){

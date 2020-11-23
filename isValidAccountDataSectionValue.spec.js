@@ -1,6 +1,6 @@
 'use strict';
 
-const isValidAccountDataSectionValue = require('../isValidAccountDataSectionValue');
+const isValidAccountDataSectionValue = require('./isValidAccountDataSectionValue');
 
 describe('isValidAccountDataSectionValue', function(){
   context(`when section is invalid`, function(){

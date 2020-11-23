@@ -1,6 +1,6 @@
 'use strict';
 
-const setNullOrFalseToUndefined = require('../setNullOrFalseToUndefined');
+const setNullOrFalseToUndefined = require('./setNullOrFalseToUndefined');
 
 describe('PNFO', function(){
   it('should be a function', function(){

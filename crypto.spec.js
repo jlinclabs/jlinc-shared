@@ -5,7 +5,7 @@ const b64 = require('urlsafe-base64');
 const {
   createSecret,
   createCrypto,
-} = require('../crypto');
+} = require('./crypto');
 
 describe('lib/crypto', function() {
 

@@ -2,7 +2,7 @@
 
 const sinon = require('sinon');
 
-const knexHelpers = require('../knexHelpers');
+const knexHelpers = require('./knexHelpers');
 
 describe('knexHelpers', function(){
   describe('knexSearch', function(){

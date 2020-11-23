@@ -1,6 +1,6 @@
 'use strict';
 
-const mergeAccountData = require('../mergeAccountData');
+const mergeAccountData = require('./mergeAccountData');
 
 describe('mergeAccountData', function(){
 

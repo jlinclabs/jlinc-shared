@@ -1,6 +1,6 @@
 'use strict';
 
-const VALID_CONSENT_KEYS = require('../consents');
+const VALID_CONSENT_KEYS = require('./consents');
 
 describe('consents', function() {
   it('should not have duplicates', function() {

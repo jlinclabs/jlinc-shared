@@ -1,11 +1,11 @@
 'use strict';
 
 const deepfreeze = require('deep-freeze-node');
-const PERSONAL_DATA_KEYS = require('../personal_data_keys');
-const CONSENTS = require('../consents');
-const COMMUNICATION_CHANNELS = require('../communication_channels');
-// const normalizeAccountData = require('../normalizeAccountData');
-const stageAccountDataChanges = require('../stageAccountDataChanges');
+const PERSONAL_DATA_KEYS = require('./personal_data_keys');
+const CONSENTS = require('./consents');
+const COMMUNICATION_CHANNELS = require('./communication_channels');
+// const normalizeAccountData = require('./normalizeAccountData');
+const stageAccountDataChanges = require('./stageAccountDataChanges');
 
 
 const arrayToObjectWithValue = (keys, value) =>
