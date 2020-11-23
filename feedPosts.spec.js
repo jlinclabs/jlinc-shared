@@ -11,6 +11,55 @@ const {
 } = require('./feedPosts');
 
 describe('feedPosts', function(){
+
+  it('shoudl work like this', function(){
+
+    const userPublishedRootPost = createFeedPost({
+      feedUserDid: 'jlinc:did:somefinepersonspublicprofiledid',
+      posterUserDid: 'jlinc:did:somefinepersonspublicprofiledid',
+    });
+
+    expect(userPublishedRootPost).to.matchPattern({
+
+    })
+
+    const organizationFormRootPostAsUser = createFeedPost({
+      feedOrganizationApikey: 'halliburton',
+      posterUserDid: 'jlinc:did:somefinepersonspublicprofiledid',
+      publishable: true,
+    });
+
+    const organizationFormRootPostAsOrg = createFeedPost({
+      feedOrganizationApikey: 'halliburton',
+      posterOrganizationApikey: 'halliburton',
+      publishable: true,
+    });
+
+    const organizationPublishedPost =
+      publishOrganizationForumPost(organizationFormRootPostAsUser);
+
+    const userPublishedRepost = repostFeedPost({
+      post: organizationPublishedPost,
+      feedUserDid: 'jlinc:did:somefinepersonspublicprofiledid',
+    });
+
+    const organizationFormRepost = repostFeedPost({
+      post: userPublishedRepost,
+      feedOrganizationApikey: 'exon',
+      publishable: false,
+    });
+
+    console.log({
+      userPublishedRootPost,
+      userPublishedRepost,
+      organizationFormRootPostAsUser,
+      organizationFormRootPostAsOrg,
+      organizationFormRepost,
+      organizationFormConsumedPost,
+      organizationPublishedPost,
+    });
+  });
+
   describe('validateFeedPost', function(){
     it('should be a function', function(){
       expect(validateFeedPost).to.be.a('function');
@@ -159,6 +208,7 @@ describe('feedPosts', function(){
         "comment_count": 0,
         "ancestors": [],
       };
+
       this.organizationPublishedPostRecord1 = {
         "feed_post_content_uid": "e5c412af6297a9e9541ad482a1d47dac",
         "uid": "b12b8d7b5ffc9da647ae09a61a368351",
@@ -241,7 +291,6 @@ describe('feedPosts', function(){
         init_created_at: 'this is a init_created_at',
       });
       expect(post).to.deep.equal({
-        type: 'unknown',
         feedPostContentUid: undefined,
         uid: '11111',
         parentUid: undefined,
@@ -311,7 +360,6 @@ describe('feedPosts', function(){
         commentCount: 0,
         ancestors: [],
         myVote: undefined,
-        type: 'organizationForum',
       });
     });
 
@@ -359,11 +407,102 @@ describe('feedPosts', function(){
       });
     });
 
-    context('when the post is an organization forum post', function() {
-      it('should have type: "organizationForum"', async function(){
-        expect(
-          recordToFeedPost(this.organizationFormPostRecord1).type
-        ).to.equal('organizationForum');
+    context('when the post is to an organization forum', function() {
+      let organizationFormPost;
+      beforeEach(function(){
+
+
+
+
+        organizationFormPost = {
+          "feed_organization_apikey": "deadlyiconcom",
+          "uid": "42b9f8343159f06858f01f71c075778e",
+          "init_uid": "42b9f8343159f06858f01f71c075778e",
+          "feed_post_content_uid": "42b9f8343159f06858f01f71c075778e",
+
+          "parent_uid": null,
+          "poster_user_did": "did:jlinc:aA_YeZC5s6sc_QKR0b2xKaRXfAy5USjl33LIPJNyrAk",
+          "poster_organization_apikey": null,
+          "published": false,
+          "created_at": new Date("2020-10-29T21:33:02.691Z"),
+          "deleted_at": null,
+          "deleted_by_user_did": null,
+          "last_publisher": null,
+          "last_published_at": null,
+          "publishable": false,
+          "edited": true,
+          "title": null,
+          "body": "<figure class=\"media\"><oembed url=\"https://vimeo.com/368540845\"></oembed></figure>",
+          "media_url": null,
+          "media_mime_type": null,
+          "init_poster_user_did": "did:jlinc:aA_YeZC5s6sc_QKR0b2xKaRXfAy5USjl33LIPJNyrAk",
+          "init_poster_organization_apikey": null,
+          "init_feed_organization_apikey": "deadlyiconcom",
+          "init_feed_user_did": null,
+          "init_created_at": new Date("2020-10-29T21:33:02.691Z"),
+          "upvote_count": 0,
+          "downvote_count": 0,
+          "comment_count": 0,
+          "ancestors": [],
+
+
+          "feed_organization_apikey": "JaredGrippe2",
+          "published": false,
+
+          // "feed_post_content_uid": "e5c412af6297a9e9541ad482a1d47dac",
+          // "uid": "b12b8d7b5ffc9da647ae09a61a368351",
+          // "parent_uid": "e5c412af6297a9e9541ad482a1d47dac",
+          // "init_uid": "e5c412af6297a9e9541ad482a1d47dac",
+
+          // "created_at": "2020-10-28T20:56:23.696Z",
+
+
+
+          // "poster_user_did": "did:jlinc:aA_YeZC5s6sc_QKR0b2xKaRXfAy5USjl33LIPJNyrAk",
+          // "poster_organization_apikey": "JaredGrippe2",
+          // "published": false,
+          // "last_publisher": null,
+          // "last_published_at": null,
+          // "publishable": false,
+
+          // "init_poster_user_did": "did:jlinc:aA_YeZC5s6sc_QKR0b2xKaRXfAy5USjl33LIPJNyrAk",
+          // "init_poster_organization_apikey": null,
+          // "init_feed_organization_apikey": "JaredGrippe2",
+          // "init_feed_user_did": null,
+          // "init_created_at": "2020-10-28T20:56:21.121Z",
+          // "upvote_count": 0,
+          // "downvote_count": 0,
+          // "comment_count": 0,
+          // "ancestors": [],
+        };
+      });
+      context('and it is a root post', function() {
+        it('should set repost=false consumed=false', async function(){
+          const post = recordToFeedPost({
+            ...organizationFormPost,
+          });
+          expect(post.repost).to.be.undefined;
+          expect(post.consumed).to.be.undefined;
+        });
+      });
+      context('and it is a repost', function() {
+        it('should set repost=true consumed=false', async function(){
+          const post = recordToFeedPost({
+            ...organizationFormPost,
+            "poster_user_did": "did:jlinc:aA_YeZC5s6sc_QKR0b2xKaRXfAy5USjl33LIPJNyrAk",
+          });
+          expect(post.repost).to.be.true;
+          expect(post.consumed).to.be.undefined;
+        });
+      });
+      context('and it was consumed', function() {
+        it('should set repost=false consumed=true', async function(){
+          const post = recordToFeedPost({
+            ...something,
+          });
+          expect(post.repost).to.be.undefined;
+          expect(post.consumed).to.be.true;
+        });
       });
     });
 

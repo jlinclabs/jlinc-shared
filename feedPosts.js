@@ -95,13 +95,26 @@ function addContentsToFeedPost(post, contents){
     return p;
   })();
 
-  if (post.feedOrganizationApikey){
-    post.type = post.published ? 'organizationPublished' : 'organizationForum';
-  }else if (post.feedUserDid){
-    post.type = 'userPublished';
-  }else{
-    post.type = 'unknown';
+  if (post.parentUid && post.feedUserDid){
+    // repost to a user profile feed
+    post.repost = true;
   }
+
+  if (
+    // its a hub forum post
+    (post.feedOrganizationApikey && !post.published) &&
+    // that came from somewhere
+    post.parentUid
+  ){
+    if (post.posterUserDid) {
+      // repost to a hub forum
+      post.repost = true;
+    }else{
+      // consumed to a hub forum
+      post.consumed = true;
+    }
+  }
+
   if (post.deletedAt){
     post.deletedByPoster = !!(
       post.deletedByUserDid &&
