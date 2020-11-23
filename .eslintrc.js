@@ -18,6 +18,7 @@ module.exports = {
     "indent": ["error", 2, {
       "ObjectExpression": 1,
       "VariableDeclarator": 0,
+      "ignoredNodes": ["ConditionalExpression"],
     }],
     "linebreak-style": ["error", "unix"],
     "quotes": "off",
