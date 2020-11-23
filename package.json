@@ -8,7 +8,7 @@
     "npm": "^6.2.0"
   },
   "scripts": {
-    "test": "nyc --reporter=text --check-coverage --lines 90 --per-file mocha"
+    "test": "nyc --reporter=text --check-coverage --lines 90 --per-file ./scripts/test"
   },
   "repository": {
     "type": "git",
