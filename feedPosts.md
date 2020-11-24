@@ -135,8 +135,8 @@ I think this idea means we drop the concept of "types of feeds" or "feeds as a d
 - visibleTo could be stored as an int:
 
 0. organization members only
-1. + organization subscribers & followers
-2. + anyone on True
-3. + public
+1. \+ organization subscribers & followers
+2. \+ anyone on True
+3. \+ public
 
 how would we distinguish between a post published for hub members only and a forum feed post?
