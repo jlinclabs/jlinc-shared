@@ -122,6 +122,8 @@ the flipside is 'no one is strictly "posting" to the hub forum feed' for "hub fe
 
 ## Ideas
 
+I think this idea means we drop the concept of "types of feeds" or "feeds as a destination for a post" and feeds become a query against posts you have access to.
+
 ### `post.visibleTo`
 
 - remove published attribute and rely on a "visible to" property set on the post.
