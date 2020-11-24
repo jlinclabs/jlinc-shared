@@ -4,8 +4,9 @@ const {
   createFeedPostUid,
   createFeedPost,
   descendFromFeedPost,
-  publishOrganizationForumPost,
   repostFeedPost,
+  publishOrganizationForumPost,
+  consumeFeedPost,
 
 
   validateFeedPost,
@@ -46,11 +47,11 @@ describe('feedPosts', function(){
       posterUserDid: 'jlinc:did:somefinepersonspublicprofiledid',
       title: 'Example 1',
       body: '<p>user posts to their own feed</p>',
-
       uid: _.isFeedPostUid,
       initUid: userPublishedRootPost.uid,
       initFeedUserDid: 'jlinc:did:somefinepersonspublicprofiledid',
-      initPosterUserDid: 'jlinc:did:somefinepersonspublicprofiledid'
+      initPosterUserDid: 'jlinc:did:somefinepersonspublicprofiledid',
+      createdAt: _.isDate,
     });
 
     const organizationFormRootPostAsUser = createFeedPost({
@@ -70,7 +71,8 @@ describe('feedPosts', function(){
 
       uid: _.isFeedPostUid,
       initUid: organizationFormRootPostAsUser.uid,
-      initPosterUserDid: 'jlinc:did:somefinepersonspublicprofiledid'
+      initPosterUserDid: 'jlinc:did:somefinepersonspublicprofiledid',
+      createdAt: _.isDate,
     });
 
     const organizationFormRootPostAsOrg = createFeedPost({
@@ -92,7 +94,8 @@ describe('feedPosts', function(){
 
       uid: _.isFeedPostUid,
       initUid: organizationFormRootPostAsOrg.uid,
-      initPosterUserDid: 'jlinc:did:somefinepersonspublicprofiledid'
+      initPosterUserDid: 'jlinc:did:somefinepersonspublicprofiledid',
+      createdAt: _.isDate,
     });
 
     const organizationPublishedPost =
@@ -132,18 +135,21 @@ describe('feedPosts', function(){
       publishable: false,
     });
 
-
-    expect({
-      userPublishedRootPost,
-      userPublishedRepost,
-      organizationFormRootPostAsUser,
-      organizationFormRootPostAsOrg,
-      organizationFormRepost,
-      organizationFormConsumedPost,
-      organizationPublishedPost,
-    }).to.deep.equal({
-
+    const organizationFormConsumedPost = consumeFeedPost({
+      feedOrganizationApikey: 'shell',
+      post: organizationPublishedPost,
+      posterUserDid: 'jlinc:did:anothercuratorwithsuperhands',
     });
+
+    expect(organizationFormConsumedPost).to.matchPattern({
+      ...descendFromFeedPost(organizationPublishedPost),
+      feedOrganizationApikey: 'shell',
+      posterUserDid: 'jlinc:did:anothercuratorwithsuperhands',
+      lastPublishingOrganizationApikey: 'halliburton',
+      lastPublishedAt: organizationPublishedPost.createdAt,
+      createdAt: _.isDate,
+    });
+
   });
 
   // describe('validateFeedPost', function(){

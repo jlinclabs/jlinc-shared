@@ -8,60 +8,71 @@ function createFeedPostUid(){
   return md5(`${Math.random()}${Date.now()}`);
 }
 
-function createFeedPost({...post}){
-  if (!post.feedUserDid && !post.feedOrganizationApikey)
+function _validateNewPost({ feedUserDid, feedOrganizationApikey, publishable }){
+  if (!feedUserDid && !feedOrganizationApikey)
     throw new Error('post.feedUserDid or post.feedOrganizationApikey is required');
-  if (post.feedUserDid && post.feedOrganizationApikey)
+  if (feedUserDid && feedOrganizationApikey)
     throw new Error('post.feedUserDid and post.feedOrganizationApikey are incompatible options');
-  if (!post.posterUserDid) throw new Error('post.posterUserDid is required');
-  if (!post.title) throw new Error('post.title is required');
-  if (!post.body) throw new Error('post.body is required');
-  post.uid = createFeedPostUid();
-  post.initUid = post.uid;
-  post.initFeedUserDid = post.feedUserDid;
-  post.initPosterUserDid = post.posterUserDid;
-  return post;
+  const publishableIsBoolean = typeof publishable === 'boolean';
+  if (feedOrganizationApikey){
+    if (!publishableIsBoolean) throw new Error('post.publishable is required');
+  }else{
+    if (publishableIsBoolean) throw new Error('post.publishable is an invalid option');
+  }
+}
+
+function createFeedPost({
+  feedUserDid,
+  feedOrganizationApikey,
+  publishable,
+  posterUserDid,
+  posterOrganizationApikey,
+  title,
+  body,
+}){
+  _validateNewPost({feedUserDid, feedOrganizationApikey, publishable});
+  if (!posterUserDid) throw new Error('post.posterUserDid is required');
+  if (!title) throw new Error('post.title is required');
+  if (!body) throw new Error('post.body is required');
+  const uid = createFeedPostUid();
+  return {
+    uid,
+    initUid: uid,
+    initFeedUserDid: feedUserDid,
+    initPosterUserDid: posterUserDid,
+    // initPosterOrganizationApikey: posterOrganizationApikey,
+    createdAt: new Date,
+    feedUserDid,
+    feedOrganizationApikey,
+    publishable,
+    posterUserDid,
+    posterOrganizationApikey,
+    title,
+    body,
+  };
 }
 
 function descendFromFeedPost(post){
+  // TODO validate input
+  // post.uid
+  // post.initUid
+  // post.feedPostContentUid
+  // post.lastPublishingOrganizationApikey
+  // post.lastPublishingUserDid
+  // post.lastPublishedAt
+  // post.ancestors
+
   return {
     initUid: post.initUid,
     feedPostContentUid: post.feedPostContentUid,
     parentUid: post.uid,
-    lastPublisher: post.lastPublisher,
+    lastPublishingOrganizationApikey: post.lastPublishingOrganizationApikey,
+    lastPublishingUserDid: post.lastPublishingUserDid,
     lastPublishedAt: post.lastPublishedAt,
     ancestors: [post.uid, ...(post.ancestors || [])],
+    createdAt: new Date,
   };
 }
-
-function publishOrganizationForumPost({
-  post: parentPost,
-  posterUserDid,
-}){
-  // TODO validate input
-  // parentPost.init_uid
-  // parentPost.feedPostContentUid
-  // parentPost.uid
-  // parentPost.feedOrganizationApikey
-  // parentPost.lastPublisher
-  // parentPost.lastPublishedAt
-  // parentPost.ancestors
-
-  const post = descendFromFeedPost(parentPost);
-  post.uid = createFeedPostUid();
-  // post.initUid = parentPost.init_uid;
-  // post.feedPostContentUid = parentPost.feedPostContentUid;
-  // post.parentUid = parentPost.uid;
-  post.feedOrganizationApikey = parentPost.feedOrganizationApikey;
-  post.posterUserDid = posterUserDid;
-  post.posterOrganizationApikey = parentPost.feedOrganizationApikey;
-  post.published = true;
-  // post.lastPublisher = parentPost.lastPublisher;
-  // post.lastPublishedAt = parentPost.lastPublishedAt;
-  // post.ancestors = [parentPost.uid, ...(parentPost.ancestors || [])];
-  return post;
-}
-
 
 function repostFeedPost({
   post: parentPost,
@@ -71,6 +82,7 @@ function repostFeedPost({
   posterUserDid,
   publishable,
 }){
+  _validateNewPost({ feedUserDid, feedOrganizationApikey, publishable });
   return {
     ...descendFromFeedPost(parentPost),
     feedOrganizationApikey,
@@ -81,8 +93,33 @@ function repostFeedPost({
   };
 }
 
+function publishOrganizationForumPost({
+  post: parentPost,
+  posterUserDid,
+}){
+  const post = descendFromFeedPost(parentPost);
+  post.uid = createFeedPostUid();
+  post.feedOrganizationApikey = parentPost.feedOrganizationApikey;
+  post.posterUserDid = posterUserDid;
+  post.posterOrganizationApikey = parentPost.feedOrganizationApikey;
+  post.published = true;
+  return post;
+}
 
-
+function consumeFeedPost({
+  post: parentPost,
+  feedOrganizationApikey,
+  posterUserDid,
+}){
+  return {
+    ...descendFromFeedPost(parentPost),
+    feedOrganizationApikey,
+    posterUserDid,
+    lastPublishingOrganizationApikey: parentPost.posterOrganizationApikey,
+    lastPublishedAt: parentPost.createdAt,
+    createdAt: parentPost.createdAt,
+  };
+}
 
 
 
@@ -264,8 +301,9 @@ module.exports = {
   createFeedPostUid,
   createFeedPost,
   descendFromFeedPost,
-  publishOrganizationForumPost,
   repostFeedPost,
+  publishOrganizationForumPost,
+  consumeFeedPost,
 
 
   FEED_POST_CONTENT_PROPS,
