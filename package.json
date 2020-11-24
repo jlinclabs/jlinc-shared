@@ -8,7 +8,7 @@
     "npm": "^6.2.0"
   },
   "scripts": {
-    "test": "nyc --reporter=text --check-coverage --lines 90 --per-file ./scripts/test"
+    "test": "./scripts/lint && nyc --reporter=text --check-coverage --lines 90 --per-file ./scripts/test"
   },
   "repository": {
     "type": "git",
@@ -29,6 +29,8 @@
     "sinon-chai": "^3.0.0"
   },
   "dependencies": {
+    "chai-match-pattern": "^1.2.0",
+    "md5": "^2.3.0",
     "sodium": "^3.0.2",
     "urlsafe-base64": "^1.0.0"
   },

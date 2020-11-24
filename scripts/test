@@ -3,5 +3,4 @@
 set -e
 set -x
 
-./scripts/lint
 mocha --forbid-only $@ `find . | grep -E '\.spec\.js$'`
