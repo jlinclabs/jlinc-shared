@@ -120,6 +120,19 @@ If we make the user's homepage feed real records it feels like an actor is posti
 the flipside is 'no one is strictly "posting" to the hub forum feed' for "hub feed consumption" so maybe the hub forum feed should be a mix of real posts and queried posts? we didnt do that because we need a place to attach comments.
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## Ideas
 
 I think this idea means we drop the concept of "types of feeds" or "feeds as a destination for a post" and feeds become a query against posts you have access to.
@@ -138,6 +151,67 @@ I think this idea means we drop the concept of "types of feeds" or "feeds as a d
 1. network only (AKA on some list)
 2. Tru only
 3. public
+
+AKA:
+
+0. Hub
+1. Network
+2. Tru
+3. Internet
+
+
+feed: hub apikey | user public profile did
+visibleTo: 0...3
+networks: [networkUid1,networkUid1]
+
+
+
+A) there are networks and you can post to networks
+B) hubs can subscribe to any network they are in or any hub in the system
+
+#### Subscription
+
+- any user can subscribe to any hub
+- any hub can subscribe to any other hub
+- any hub can subscribe to any network
+- any hub can subscribe to any user
+- any network can subscribe to any hub
+- any network can subscribe to any user
+
+`(user|hub|network)<-subscribe->(user|hub|network)`
+
+```
+hub-x <- network-p -> hub-y
+
+network_members:
+| network_id | hub_id |
+|------------|--------|
+| net-a      | 🐪     |
+| net-a      | 🍩     |
+| net-a      | 💵     |
+
+```
+
+
+
+
+- the hub admin for `350sf` posts to it's forum
+- the publishes that post with visible-to-network-only: `350network`
+- because `350california` is subscribed to `350sf`
+  - AND `350california` is a member of `350network` network
+- then `350california` ingests that post into their forum
+- a member of `350california` reposts it to `350eu`
+  - which is allowed because `350eu` is in the `350network`
+- `350eu` publishes the post
+  - its locked to: visible-to-network-only: `350network`
+
+<!-- ¿ does `350california` have control over being "subscribed" to posts -->
+
+
+
+
+
+
 
 ### What about subscribers?
 
@@ -183,7 +257,7 @@ you are logged in and in the
 
 ARE A first-class object next to user and organizations.
 
-networks have many user members with optional admin role
+networks have one owner/admin
 
 maintain a set of organization apikeys that are members of the network
 
@@ -205,8 +279,8 @@ a set of sets of hub apikeys that are maintained by an owning hub
 
 `hub subscriber list AKA network`?
 
-following: listen for posts with `visibltTo >= 2`
-subscribing: hub1 listening for posts from hub2 with `visibltTo >= 2`
+following: listen for posts with `visibleTo >= 2`
+subscribing: hub1 listening for posts from hub2 with `visibleTo >= 2`
 joining a hub subscriber list:
 
 
