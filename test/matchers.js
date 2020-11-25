@@ -4,9 +4,8 @@ const chai = require('chai');
 const chaiMatchPattern = require('chai-match-pattern');
 const matchPattern = require('lodash-match-pattern');
 chai.use(chaiMatchPattern);
-global.expect = chai.expect;
-global._ = chaiMatchPattern.getLodashModule();
-
+const expect = chai.expect;
+const _ = chaiMatchPattern.getLodashModule();
 
 const definePattern = (patternName, pattern) => {
   const name = patternName[0].toUpperCase() + patternName.substr(1);
@@ -41,6 +40,8 @@ definePattern('dateString', /^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d.\d\d\dZ$/);
 // _.mixin({});
 
 module.exports = {
+  _,
   chai,
+  expect,
   definePattern,
 };

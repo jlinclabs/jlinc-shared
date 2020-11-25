@@ -134,9 +134,148 @@ I think this idea means we drop the concept of "types of feeds" or "feeds as a d
 
 - visibleTo could be stored as an int:
 
-0. organization members only
-1. \+ organization subscribers & followers
-2. \+ anyone on True
-3. \+ public
+0. members only
+1. network only (AKA on some list)
+2. Tru only
+3. public
+
+### What about subscribers?
+
+this means the hubs subscribed to other hubs via `feed_subscriptions`
+
+this is used only ingestions time
+
+is a list maintained privately by the subscriber
+¿ OR ?
+is a list maintained privately by the hub
+
+
+
+### `post.maxVisibleTo`
+
+this is only used for forum posts like `lastPublishingUserDid` and `lastPublishingOrganizationApikey`.
+
+this is where the author specifies how publicable this post is.
+
+example1: user creates a hub forum posts and says this can be published but to Tru member only; it would create a post with `{visibleTo: 0}` making it a hub forum posts and `{maxVisibleTo: 2}`.
+
+example2: a hub ingests a post from another hub, the post being ingested is `{visibleTo: 1, networks: n}` it would create a post with `{visibleTo: 0}` making it a hub and `{maxVisibleTo: 1, networks: n}`. if this post gets published its only allowed to be set `{visibleTo: 1, networks: n}` making it only sharable to the networks it was originally posted to.
+
+example3: a users posts to their public profile feed saying the post is visible to tru members only but can be published publically.
+
+#### `members only`
+
+you are logged in and in the
+
+#### `network only`
+
+
+#### `Tru only`
+
+
+#### `public`
+
+
+
+
+
+#### Networks
+
+ARE A first-class object next to user and organizations.
+
+networks have many user members with optional admin role
+
+maintain a set of organization apikeys that are members of the network
+
+when a hub is in a network it is allowed to create feed posts with
+`{visibleTo: 1, networks: [networkUid]}` to post within that network.
+when this happens, hubs in the network and subscribe to the feed hub, ingest the post.
+
+when a post has visibleTo=1 we check generate a list of organizations apikeys for ingestion:
+
+```
+post.networks = [networkUid1, networkUid2]
+const orgsThatIngestThisPost = (
+  (all the hubs subscribed to the target hub) |
+  (all the hubs in the networks specified)
+)
+```
+
+a set of sets of hub apikeys that are maintained by an owning hub
+
+`hub subscriber list AKA network`?
+
+following: listen for posts with `visibltTo >= 2`
+subscribing: hub1 listening for posts from hub2 with `visibltTo >= 2`
+joining a hub subscriber list:
+
 
 how would we distinguish between a post published for hub members only and a forum feed post?
+
+feeds as queries:
+
+$canSee:
+```sql
+$canSee = (
+  visibleTo >= 3
+  AND i_am_logged_in AND (
+    ((visibleTo >= 2) OR (visibleTo >= 1 AND `post to a hub I follow`))
+    AND `not a post ive hidden from myself`
+  )
+)
+```
+
+- hub forum
+```sql
+WHERE visibleTo = 0
+AND `post is to the hub`
+AND `i am a member of the hub`
+```
+
+- hub published
+```sql
+WHERE `post is to the hub`
+AND visibleTo >= 1
+AND $canSee:
+```
+
+- homepage:
+```sql
+WHERE `post is to a hub I follow`
+AND $canSee
+```
+
+following a hub is just a list the user maintains and feeds this query. it just has to be visibleTo >= 2
+
+- public profile feed:
+```sql
+WHERE `post is to this public profile feed`
+AND $canSee
+```
+
+- hub ingestion
+```sql
+WHERE `post is to this public profile feed`
+AND $canSee
+```
+
+```
+when a post is created that is:
+  - to a hub
+  - visibleTo > 0
+then:
+  for each hub that (subscribes to this hub OR is in the selected network)
+    ingest that post
+    *these new posts always have visibleTo=0*
+    ¿¿forward along the post.networks value??
+```
+
+the `for each that subscribes to that hub` query is where we can support
+- networks and hub-to-hub subscriptions.
+- and in the
+
+**this would work for 'hub follows public profile' feature**
+
+
+
+
