@@ -4,7 +4,6 @@ const chai = require('chai');
 const chaiMatchPattern = require('chai-match-pattern');
 const matchPattern = require('lodash-match-pattern');
 chai.use(chaiMatchPattern);
-const expect = chai.expect;
 const _ = chaiMatchPattern.getLodashModule();
 
 const definePattern = (patternName, pattern) => {
@@ -12,70 +11,43 @@ const definePattern = (patternName, pattern) => {
   const isName = `is${name}`;
   const aName = (/[AEIOU]/.test(name[0]) ? 'an' : 'a') + name;
 
-  const dynamicPattern = patternReturnsAFunction(pattern);
+  const patternIsAFunction = _.isFunction(pattern);
+  const patternTakesOptions = patternIsAFunction && pattern.length > 1;
 
-  function something(matchPattern){
-    try{
-      return undefinedToTrue(matchPattern());
-    }catch(error){
-      if (error instanceof chai.AssertionError) return false;
-      throw error;
-    }
-    return true;
+  let isMethod, aMethod;
+  if (patternIsAFunction){
+    aMethod = function(target, ...args){
+      try{
+        return pattern(target, ...args) !== false ? null : '';
+      }catch(error){
+        return `${error}`;
+      }
+    };
+
+    isMethod = patternTakesOptions
+      ? (...args) => target => aMethod(target, ...args) === null
+      : target => aMethod(target) === null
+    ;
+  }else{
+    aMethod = target => matchPattern(target, pattern);
+    isMethod = target => aMethod(target) === null;
   }
-
-  const isMethod = dynamicPattern
-    ? (...args) => target => something(() => pattern(...args)(target))
-    : target => something(() => matchPattern(target, fuck(pattern)) === null)
-  ;
 
   isMethod.pattern = pattern;
   isMethod.toString = () => `${isName}()`;
-
   _.mixin({ [isName]: isMethod });
 
   chai.Assertion.addMethod(aName, function(...args){
-    if (dynamicPattern) {
-      // this case does not respect the chai negation (not) flag
-      let error;
-      try {
-        pattern(...args)(this._obj);
-      } catch(e){
-        error = e;
-      } finally {
-        this.assert(
-          !error,
-          error && `${error.message} in pattern ${patternName}`,
-          `expected #{this} to not match pattern ${patternName}`,
-          this._obj,
-        );
-      }
-    } else {
-      const obj = this._obj;
-
-      const check = matchPattern(obj, fuck(pattern));
-      this.assert(
-        !check,
-        check && `${check} in pattern ${patternName}`,
-        `expected #{this} to not match ${patternName}: ${check}`,
-        obj
-      );
-    }
+    const check = aMethod(this._obj, ...args);
+    const error = typeof check === 'string' ? `: ${check}` : '';
+    this.assert(
+      check === null,
+      `expected #{this} to match pattern ${patternName}${error}`,
+      `expected #{this} to not match pattern ${patternName}${error}`,
+      this._obj,
+    );
   });
+
 };
 
-const fuck = pattern =>
-  typeof pattern === 'function'
-    ? target => undefinedToTrue(pattern(target))
-    : pattern;
-
-function patternReturnsAFunction(pattern){
-  try{
-    return _.isFunction(pattern) && _.isFunction(pattern());
-  }catch(e){}
-}
-
-const undefinedToTrue = value =>
-  typeof value === 'undefined' ? true : value;
-
-module.exports = definePattern
+module.exports = definePattern;
