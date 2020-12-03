@@ -5,6 +5,8 @@ set -x
 
 ./scripts/lint
 nyc \
+  --include=**/*.js \
+  --exclude=**/*.spec.js \
   --reporter=text \
   --check-coverage \
   --lines 90 \
