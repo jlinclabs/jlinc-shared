@@ -4,4 +4,9 @@ set -e
 set -x
 
 ./scripts/lint
-mocha --forbid-only $@ `find . | grep -E '\.spec\.js$'`
+nyc \
+  --reporter=text \
+  --check-coverage \
+  --lines 90 \
+  --per-file  \
+  mocha --forbid-only $@ `find . | grep -E '\.spec\.js$'`
