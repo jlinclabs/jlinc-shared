@@ -1,12 +1,8 @@
 'use strict';
 
 const chai = require('chai');
-const chaiMatchPattern = require('chai-match-pattern');
-const matchPattern = require('lodash-match-pattern');
-chai.use(chaiMatchPattern);
+const { _, matchPattern, definePattern } = require('./patternMatchers');
 const expect = chai.expect;
-const _ = chaiMatchPattern.getLodashModule();
-const definePattern = require('./definePattern');
 
 module.exports = {
   _,
