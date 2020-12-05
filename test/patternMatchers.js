@@ -20,7 +20,8 @@ Object.entries({
   _.mixin({
     [key]: function(...patterns){
       const matcher = value(...patterns);
-      matcher.toString = () => `_.${key}(${patterns.map(inspectPattern).join(', ')})`;
+      // Note we can't have _. infront of the key here because lodash-match-pattern normalize line 26 will be upset
+      matcher.toString = () => `${key}(${patterns.map(inspectPattern).join(', ')})`;
       return matcher;
     },
   });

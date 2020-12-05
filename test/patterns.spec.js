@@ -161,13 +161,7 @@ describe('patterns', function(){
         [1, 2],
         [1, 2],
         ['please pick me', 5, 11, 22, ...randomObjects(), ...notStrings()]
-      ]
-    ]
-  );
-
-  testPatternWithOptions(
-    'includedIn',
-    [
+      ],
       [
         new Set([1, 2]),
         [1, 2],

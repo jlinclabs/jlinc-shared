@@ -27,6 +27,5 @@ definePattern('recentDate', date =>
 );
 
 definePattern('includedIn', (target, set) => {
-  if (!(set instanceof Set) && !(set instanceof Array)) throw new Error('includedIn must be given an array or a set');
   return [...set].includes(target);
 });

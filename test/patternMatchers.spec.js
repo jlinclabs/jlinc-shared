@@ -57,15 +57,23 @@ describe('patternMatchers', function(){
       const isStringOrNumber = _.isSome(_.isString, _.isNumber);
       expect(isStringOrNumber).to.be.a('function');
       const trues = [1,10,-1,Infinity];
-      const fales = [,undefined,null,true,false,[],{}];
+      const fails = [undefined,null,true,false,[],{}];
       trues.forEach(number => {
         expect(number).to.matchPattern(isStringOrNumber);
         expect(isStringOrNumber(number)).to.be.true;
       });
-      fales.forEach(number => {
+      fails.forEach(number => {
         expect(number).to.not.matchPattern(isStringOrNumber);
         expect(isStringOrNumber(number)).to.be.false;
       });
+
+      expect(() => {
+        expect({
+          number: [],
+        }).to.matchPattern({
+          number: isStringOrNumber
+        });
+      }).to.throw(`{number: []} didn't match target {number: 'isSome(_.isString, _.isNumber)'}`);
     });
   });
 
@@ -193,6 +201,16 @@ describe('patternMatchers', function(){
         chai.AssertionError,
         `expected { Object (name, hand, ...) } to not match pattern alienBodyNamed`
       );
+
+      expect(
+        () => {
+          expect({
+            tea: 'in a pot',
+          }).to.matchPattern({
+            tea: _.isAlienBodyNamed('Tea')
+          });
+        }
+      ).to.throw(`{tea: 'in a pot'} didn't match target {tea: 'isAlienBodyNamed()'}`);
     });
 
   });

@@ -337,6 +337,13 @@ describe('buyingInterests', function() {
         description: 'A new pair of red shoes.',
         currency: '£',
         tags: ['X'],
+        location: 1234,
+      })).to.throw(`Location must be a string`);
+
+      expect(() => validateBuyingInterest({
+        description: 'A new pair of red shoes.',
+        currency: '£',
+        tags: ['X'],
         location: 'my feet',
       })).to.not.throw();
 

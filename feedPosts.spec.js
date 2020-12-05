@@ -58,6 +58,10 @@ describe('feedPosts', function(){
           {feedOrganizationApikey: 'x'},
           'posts must have a parentUid, title and or a body'
         );
+        expectCase(
+          {feedOrganizationApikey: 'x', parentUid: 'iamdad', title: 'glitterforever'},
+          'posts with a parentUid cannot have a title or a body'
+        );
       });
     });
   });
@@ -587,6 +591,14 @@ describe('feedPosts', function(){
             });
           });
         });
+
+        context('whose contents.uid does not match post.feedPostContentsUid', function() {
+          it('should throw', function() {
+            expect(() =>
+              addContentsToFeedPost({ feedPostContentUid: 'we'}, { uid: 'dont match' })
+            ).to.throw('feedPostContentUid mismatch dont match !== we');
+          });
+        });
       });
     });
   });
@@ -618,13 +630,23 @@ describe('feedPosts', function(){
         post = {};
         expectError('post.feedOrganizationApikey or post.feedUserDid is required');
 
-        post.feedOrganizationApikey = 'pooplabs';
+        post = { feedOrganizationApikey: 'hello', feedUserDid: 'goobye' };
+        expectError('post.feedOrganizationApikey and post.feedUserDid are incompatible options');
+
+        post = { feedOrganizationApikey: 'pooplabs' };
         expectError('post.publishable must be a boolean');
 
         post.publishable = true;
         expectError('one of post.title or post.body is required');
 
         post.title = 'hello world';
+        expect(() => validateNewFeedPost(post)).to.not.throw();
+
+        post = { feedUserDid: 'johnyang' };
+        expectError('post.publishable must be true');
+
+        post.publishable = true;
+        post.title = 'hello';
         expect(() => validateNewFeedPost(post)).to.not.throw();
       });
     });
@@ -647,8 +669,10 @@ describe('feedPosts', function(){
     });
     it('should validate a new feed post', function(){
       expect(() => validateFeedPostContents({})).to.throw('one of post.title or post.body is required');
+      expect(() => validateFeedPostContents({title: {}})).to.throw('post.title must be a string');
       expect(() => validateFeedPostContents({title:'  '})).to.throw('one of post.title or post.body is required');
       expect(() => validateFeedPostContents({body:'  '})).to.throw('one of post.title or post.body is required');
+      expect(() => validateFeedPostContents({body:[]})).to.throw('post.body must be a string');
       expect(() => validateFeedPostContents({title:'x'})).to.not.throw();
       expect(() => validateFeedPostContents({body:'x'})).to.not.throw();
     });

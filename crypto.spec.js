@@ -11,6 +11,7 @@ describe('lib/crypto', function() {
 
   describe('createSecret', function() {
     it('should create a b64 encoded random string', function(){
+      expect(() => createSecret({})).to.throw('length must be of type number');
       expect(createSecret(8) ).to.be.a('string').and.have.lengthOf(11);
       expect(createSecret(12)).to.be.a('string').and.have.lengthOf(16);
       expect(createSecret(16)).to.be.a('string').and.have.lengthOf(22);
