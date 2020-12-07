@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+set -e
+set -x
+
+nyc \
+  --include=**/*.js \
+  --exclude=**/*.spec.js \
+  --reporter=text \
+  --check-coverage \
+  --lines 90 \
+  --per-file  \
+  $@
