@@ -170,27 +170,26 @@ describe('patterns', function(){
     ]
   );
 
-  // testPatternWithOptions(
-  //   'dateLessThanXAgo',
-  //   [
-  //     [
-  //       1000,
-  //       [new Date, new Date(Date.now() - 800)],
-  //       ['yestuday', '08/23/2001', new Date(Date.now() - 1100)],
-  //     ],
-  //     [
-  //       5000,
-  //       [new Date, new Date(Date.now() - 5000)],
-  //       ['yestuday', '08/23/2001', new Date(Date.now() - 5100)],
-  //     ],
-  //   ]
-  // );
+  // by hand because time is hard
+  it('dateLessThanXAgo', function(){
+    const isDateLessThan1000Ago = _.isDateLessThanXAgo(1000);
+    expect(isDateLessThan1000Ago).to.be.a('function');
+    expect(isDateLessThan1000Ago+'').to.be.equal('isDateLessThanXAgo()');
+    expect(isDateLessThan1000Ago()).to.be.false;
+    expect(isDateLessThan1000Ago('yestuday')).to.be.false;
+    expect(isDateLessThan1000Ago(new Date)).to.be.true;
+    expect(isDateLessThan1000Ago(new Date(Date.now() - 2000))).to.be.false;
+  });
 
-  // testPatternWithoutOptions(
-  //   'recentDate',
-  //   [new Date, new Date(Date.now() - 800)],
-  //   ['yestuday', '08/23/2001', new Date(Date.now() - 1100)],
-  // );
+  // by hand because time is hard
+  it('recentDate', function(){
+    expect(_.isRecentDate).to.be.a('function');
+    expect(_.isRecentDate+'').to.be.equal('isRecentDate()');
+    expect(_.isRecentDate()).to.be.false;
+    expect(_.isRecentDate('yestuday')).to.be.false;
+    expect(_.isRecentDate(new Date)).to.be.true;
+    expect(_.isRecentDate(new Date(Date.now() - 2000))).to.be.false;
+  });
 
 });
 

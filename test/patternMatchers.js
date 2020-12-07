@@ -1,5 +1,6 @@
 'use strict';
 
+const { inspect } = require('util');
 const chai = require('chai');
 const chaiMatchPattern = require('chai-match-pattern');
 const matchPattern = require('lodash-match-pattern');
@@ -30,9 +31,10 @@ Object.entries({
 function inspectPattern(pattern){
   if (_.isFunction(pattern)) {
     if (_[pattern.name] === pattern) return `_.${pattern.name}`;
-    return `${pattern.name}`;
+    return pattern.name || pattern.toString();
   }
-  return `${pattern}`;
+  return inspect(pattern)
+    .replace(/\[Function: is(.+?)\]/, (s, m) => `is${m}` in _ ? `_.is${m}` : s);
 }
 
 function normalizePatternFunction(pattern){
@@ -105,4 +107,4 @@ definePattern.names = function(patternName){
 
 
 
-module.exports = { _, definePattern, chai };
+module.exports = { _, matchPattern, definePattern, chai };

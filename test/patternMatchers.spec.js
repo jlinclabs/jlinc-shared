@@ -42,6 +42,12 @@ describe('patternMatchers', function(){
           testIsUUID(isUUID);
         });
       });
+      context('that throws a non assertion error', function(){
+        it('it should throw that error', function() {
+          const isFire = _.matchesPattern(() => { throw new Error('fire!'); });
+          expect(() => { isFire(); }).to.throw(Error, 'fire!');
+        });
+      });
     });
   });
 
@@ -74,6 +80,22 @@ describe('patternMatchers', function(){
           number: isStringOrNumber
         });
       }).to.throw(`{number: []} didn't match target {number: 'isSome(_.isString, _.isNumber)'}`);
+    });
+  });
+
+  it('matchesPattern, isEvery and isSome should define toString on returned functions', function(){
+    ['matchesPattern', 'isEvery', 'isSome'].forEach(helper => {
+      const isString = _[helper](_.isString);
+      expect(isString+'').to.equal(`${helper}(_.isString)`);
+
+      const isFrog = _[helper](thing => thing.isSlimey);
+      expect(isFrog+'').to.equal(`${helper}(thing => thing.isSlimey)`);
+
+      const isLog = _[helper]({ rings: _.isInteger });
+      expect(isLog+'').to.equal(`${helper}({ rings: _.isInteger })`);
+
+      const isABigCow = _[helper]({ isBig: i => i > 10 });
+      expect(isABigCow+'').to.equal(`${helper}({ isBig: [Function: isBig] })`);
     });
   });
 
@@ -125,6 +147,13 @@ describe('patternMatchers', function(){
           expect(_.isMagicCarpet()).to.be.false;
           expect(_.isMagicCarpet({})).to.be.false;
           expect(_.isMagicCarpet({magic: 'carpet'})).to.be.true;
+        });
+      });
+      context('that throws a non-assertion error', function(){
+        it('should throw that error', function(){
+          definePattern('ShoeFarm', () => { throw new Error('fire!'); });
+          expect(() => { _.isShoeFarm(); }).to.throw(Error, 'fire!');
+          expect(() => { expect().to.be.aShoeFarm(); }).to.throw(Error, 'fire!');
         });
       });
     });
@@ -214,4 +243,5 @@ describe('patternMatchers', function(){
     });
 
   });
+
 });
