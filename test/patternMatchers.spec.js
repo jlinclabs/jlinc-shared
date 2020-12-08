@@ -121,6 +121,16 @@ describe('patternMatchers', function(){
   });
 
   describe('definePattern', function(){
+    it('.isName', function(){
+      [
+        ['aCar', 'isCar'],
+        ['theStringUndefined', 'isTheStringUndefined'],
+        ['anOrganization', 'isOrganization'],
+        ['aUser', 'isUser'],
+      ].forEach(([aName, isName]) => {
+        expect(definePattern.isName(aName)).to.equal(isName);
+      });
+    });
     describe('when the pattern is a RegExp', function(){
       it('should work like this', function(){
         definePattern('theStringUndefined', /^undefined$/);
@@ -128,17 +138,17 @@ describe('patternMatchers', function(){
         expect(_.isTheStringUndefined()).to.be.false;
         expect(_.isTheStringUndefined(undefined)).to.be.false;
         expect(_.isTheStringUndefined('undefined')).to.be.true;
-        expect().to.not.be.aTheStringUndefined();
-        expect(undefined).to.not.be.aTheStringUndefined();
-        expect('undefined').to.be.aTheStringUndefined();
+        expect().to.not.be.theStringUndefined();
+        expect(undefined).to.not.be.theStringUndefined();
+        expect('undefined').to.be.theStringUndefined();
         expect(() => {
-          expect().to.be.aTheStringUndefined();
+          expect().to.be.theStringUndefined();
         }).to.throw(
           chai.AssertionError,
           `expected undefined to match pattern theStringUndefined:`
         );
 
-        definePattern('stringWithLetterZ', /z/);
+        definePattern('aStringWithLetterZ', /z/);
         expect(_.isStringWithLetterZ).to.be.a('function');
         expect(_.isStringWithLetterZ({})).to.be.false;
         expect(_.isStringWithLetterZ('l')).to.be.false;
@@ -152,13 +162,13 @@ describe('patternMatchers', function(){
           expect('peepee').to.be.aStringWithLetterZ();
         }).to.throw(
           chai.AssertionError,
-          `expected 'peepee' to match pattern stringWithLetterZ`
+          `expected 'peepee' to match pattern aStringWithLetterZ`
         );
         expect(() => {
           expect('zeebra').to.not.be.aStringWithLetterZ();
         }).to.throw(
           chai.AssertionError,
-          `expected 'zeebra' to not match pattern stringWithLetterZ`
+          `expected 'zeebra' to not match pattern aStringWithLetterZ`
         );
       });
     });
@@ -166,7 +176,7 @@ describe('patternMatchers', function(){
     describe('when the pattern is a function', function(){
       describe('that returns a boolean', function(){
         it('should work like this', function(){
-          definePattern('dogName', name =>
+          definePattern('aDogName', name =>
             _.isString(name) && !!name.match(/^\w+$/)
           );
           expect(_.isDogName).to.be.a('function');
@@ -181,7 +191,7 @@ describe('patternMatchers', function(){
       });
       describe('that uses expect', function(){
         it('should work like this', function(){
-          definePattern('magicCarpet', target => {
+          definePattern('aMagicCarpet', target => {
             expect(target).to.deep.equal({ magic: 'carpet' });
           });
           expect(_.isMagicCarpet).to.be.a('function');
@@ -193,7 +203,7 @@ describe('patternMatchers', function(){
       });
       context('that throws a non-assertion error', function(){
         it('should throw that error', function(){
-          definePattern('ShoeFarm', () => { throw new Error('fire!'); });
+          definePattern('aShoeFarm', () => { throw new Error('fire!'); });
           expect(() => { _.isShoeFarm(); }).to.throw(Error, 'fire!');
           expect(() => { expect().to.be.aShoeFarm(); }).to.throw(Error, 'fire!');
         });
@@ -202,7 +212,7 @@ describe('patternMatchers', function(){
 
     describe('when the pattern is a function with options', function(){
       it('should work like this', function(){
-        definePattern('magicShoe', (shoe, schoolOfMagic) => {
+        definePattern('aMagicShoe', (shoe, schoolOfMagic) => {
           expect(shoe).to.matchPattern({
             schoolOfMagic,
             laces: _.isString,
@@ -227,31 +237,31 @@ describe('patternMatchers', function(){
           expect({}).to.be.aMagicShoe('this is wrong');
         }).to.throw(
           chai.AssertionError,
-          `expected {} to match pattern magicShoe: AssertionError: {schoolOfMagic: undefined} didn't match target {schoolOfMagic: 'this is wrong'}`
+          `expected {} to match pattern aMagicShoe: AssertionError: {schoolOfMagic: undefined} didn't match target {schoolOfMagic: 'this is wrong'}`
         );
         expect(() => {
           expect({ schoolOfMagic: 'magic is a lie' }).to.be.aMagicShoe('this is wrong');
         }).to.throw(chai.AssertionError, /{schoolOfMagic: 'magic is a lie'} didn't match target {schoolOfMagic: 'this is wrong'}/);
         expect(() => {
           expect({ schoolOfMagic: 'i love magic', laces: 'yes' }).to.not.be.aMagicShoe('i love magic');
-        }).to.throw(chai.AssertionError, `expected { Object (schoolOfMagic, laces) } to not match pattern magicShoe`);
+        }).to.throw(chai.AssertionError, `expected { Object (schoolOfMagic, laces) } to not match pattern aMagicShoe`);
       });
     });
 
     it('complex patterns should be composable', function() {
-      definePattern('hand', { fingers: _.isNumber });
-      definePattern('foot', { toes: _.isNumber });
-      definePattern('body', {
+      definePattern('aHand', { fingers: _.isNumber });
+      definePattern('aFoot', { toes: _.isNumber });
+      definePattern('aBody', {
         hand: _.isHand,
         foot: _.isFoot,
         '...': 0,
       });
-      definePattern('alienBody', body => {
+      definePattern('anAlienBody', body => {
         expect(body).to.be.aBody();
         expect(body.eyes).to.equal('almond');
         expect(body.isHuman).to.not.be.true;
       });
-      definePattern('alienBodyNamed', (body, name) => {
+      definePattern('anAlienBodyNamed', (body, name) => {
         expect(body).to.be.anAlienBody();
         expect(body.name).to.equal(name);
         expect(body.nameless).to.not.be.false;
@@ -270,7 +280,7 @@ describe('patternMatchers', function(){
         expect(Bill).to.not.be.anAlienBodyNamed('Bill');
       }).to.throw(
         chai.AssertionError,
-        `expected { Object (name, hand, ...) } to not match pattern alienBodyNamed`
+        `expected { Object (name, hand, ...) } to not match pattern anAlienBodyNamed`
       );
 
       expect(

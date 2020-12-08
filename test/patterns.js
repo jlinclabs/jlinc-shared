@@ -2,13 +2,13 @@
 
 const { _, expect, definePattern } = require('./matchers');
 
-definePattern('ISOdateString', /^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d.\d\d\dZ$/);
-definePattern('JWT', /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]*$/);
-definePattern('DID', /^did:jlinc:.+$/);
-definePattern('organizationApikey', /^[a-z]{2,30}$/i);
+definePattern('anISOdateString', /^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d.\d\d\dZ$/);
+definePattern('aJWT', /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]*$/);
+definePattern('aDID', /^did:jlinc:.+$/);
+definePattern('anOrganizationApikey', /^[a-z]{2,30}$/i);
 
 
-definePattern('jsonStringMatching', (json, pattern) => {
+definePattern('aJsonStringMatching', (json, pattern) => {
   let object;
   try{ object = JSON.parse(json); }catch(e){ return false; };
   expect(object).to.matchPattern(pattern);
@@ -20,17 +20,17 @@ definePattern('JSON', json => {
   catch(e){ return false; }
 });
 
-definePattern('dateLessThanXAgo', (date, delta) =>
+definePattern('aDateLessThanXAgo', (date, delta) =>
   _.isDate(date) && date >= Date.now() - delta
 );
 
-definePattern('recentDate', date =>
+definePattern('aRecentDate', date =>
   _.isDateLessThanXAgo(1000)(date)
 );
 
-definePattern('includedIn', (target, set) => {
-  return [...set].includes(target);
-});
+definePattern('includedIn', (target, set) =>
+  [...set].includes(target)
+);
 
 definePattern('trueOrUndefined', value =>
   value === true || value === undefined

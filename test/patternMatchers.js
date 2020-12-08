@@ -57,8 +57,8 @@ function normalizePatternFunction(pattern){
 }
 
 
-const definePattern = (patternName, pattern) => {
-  const { isName, aName } = definePattern.names(patternName);
+const definePattern = (aName, pattern) => {
+  const isName = definePattern.isName(aName);
   if (_.isRegExp(pattern)) pattern = regExpPatternToFunction(pattern);
   const patternIsAFunction = _.isFunction(pattern);
   const patternTakesOptions = patternIsAFunction && pattern.length > 1;
@@ -96,19 +96,21 @@ const definePattern = (patternName, pattern) => {
     const error = typeof check === 'string' ? `: ${check}` : '';
     this.assert(
       check === null,
-      `expected #{this} to match pattern ${patternName}${error}`,
-      `expected #{this} to not match pattern ${patternName}${error}`,
+      `expected #{this} to match pattern ${aName}${error}`,
+      `expected #{this} to not match pattern ${aName}${error}`,
       this._obj,
     );
   });
 
 };
 
-definePattern.names = function(patternName){
-  const name = patternName[0].toUpperCase() + patternName.substr(1);
-  const isName = `is${name}`;
-  const aName = (/[AEIOU]/.test(name[0]) ? 'an' : 'a') + name;
-  return { isName, aName };
+const capitalize = string => string[0].toUpperCase() + string.substr(1);
+
+definePattern.isName = function(patternName){
+  return patternName.match(/^an?(.+)$/)
+    ? `is${RegExp.$1}`
+    : `is${capitalize(patternName)}`
+  ;
 };
 
 

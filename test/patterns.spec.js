@@ -8,8 +8,8 @@ const toJSON = JSON.stringify;
 
 describe('patterns', function(){
 
-  function testPattern(patternName, isTests, matcherTests){
-    const { isName, aName } = definePattern.names(patternName);
+  function testPattern(aName, isTests, matcherTests){
+    const isName = definePattern.isName(aName);
     describe(`_.${isName}`, function(){
       it('should be a function', function(){
         expect(_[isName]).to.be.a('function');
@@ -117,13 +117,13 @@ describe('patterns', function(){
   );
 
   testPatternWithoutOptions(
-    'ISOdateString',
+    'anISOdateString',
     ['2020-12-04T21:18:55.821Z', (new Date).toISOString()],
     [...randomObjects()],
   );
 
   testPatternWithoutOptions(
-    'JWT',
+    'aJWT',
     [
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c',
     ],
@@ -131,7 +131,7 @@ describe('patterns', function(){
   );
 
   testPatternWithoutOptions(
-    'DID',
+    'aDID',
     [
       'did:jlinc:aA_YeZC5s6sc_QKR0b2xKaRXfAy5USjl33LIPJNyrAk',
     ],
@@ -139,7 +139,7 @@ describe('patterns', function(){
   );
 
   testPatternWithOptions(
-    'jsonStringMatching',
+    'aJsonStringMatching',
     [
       [
         {name: _.isString},
@@ -171,7 +171,7 @@ describe('patterns', function(){
   );
 
   // by hand because time is hard
-  it('dateLessThanXAgo', function(){
+  it('aDateLessThanXAgo', function(){
     const isDateLessThan1000Ago = _.isDateLessThanXAgo(1000);
     expect(isDateLessThan1000Ago).to.be.a('function');
     expect(isDateLessThan1000Ago+'').to.be.equal('isDateLessThanXAgo()');
@@ -179,16 +179,22 @@ describe('patterns', function(){
     expect(isDateLessThan1000Ago('yestuday')).to.be.false;
     expect(isDateLessThan1000Ago(new Date)).to.be.true;
     expect(isDateLessThan1000Ago(new Date(Date.now() - 2000))).to.be.false;
+    expect(new Date(Date.now() - 1000)).to.be.aDateLessThanXAgo(2000);
+    expect(() => {
+      expect(new Date(Date.now() - 2000)).to.be.aDateLessThanXAgo(1000);
+    }).to.throw('to match pattern aDateLessThanXAgo');
   });
 
   // by hand because time is hard
-  it('recentDate', function(){
+  it('aRecentDate', function(){
     expect(_.isRecentDate).to.be.a('function');
     expect(_.isRecentDate+'').to.be.equal('isRecentDate()');
     expect(_.isRecentDate()).to.be.false;
     expect(_.isRecentDate('yestuday')).to.be.false;
     expect(_.isRecentDate(new Date)).to.be.true;
     expect(_.isRecentDate(new Date(Date.now() - 2000))).to.be.false;
+    expect(new Date).to.be.aRecentDate();
+    expect(new Date(Date.now() - 2000)).to.not.be.aRecentDate();
   });
 
   testPatternWithoutOptions(
@@ -198,7 +204,7 @@ describe('patterns', function(){
   );
 
   testPatternWithoutOptions(
-    'organizationApikey',
+    'anOrganizationApikey',
     ['abc', 'planetwork', 'thisisexactlythirtycharacterss'],
     [
       12, '', 'a', 'thisislongerthanthirtycharacters',
