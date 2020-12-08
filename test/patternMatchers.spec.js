@@ -7,6 +7,8 @@ const UUID_REGEXP = /^[\w-_]+\.[\w-_]+\.[\w-_]*$/;
 function testIsUUID(isUUID){
   expect(isUUID).to.be.a('function');
   expect(isUUID()).to.be.false;
+  expect(isUUID(undefined)).to.be.false;
+  expect(isUUID(null)).to.be.false;
   expect(isUUID(12)).to.be.false;
   expect(isUUID('poop')).to.be.false;
   expect(isUUID('a.b.c')).to.be.true;
@@ -21,6 +23,12 @@ describe('patternMatchers', function(){
       it('should return an isMatcher function for it', function(){
         const isUUID = _.matchesPattern(UUID_REGEXP);
         testIsUUID(isUUID);
+
+        const isTheStringUndefined = _.matchesPattern(/^undefined$/);
+        expect(isTheStringUndefined).to.be.a('function');
+        expect(isTheStringUndefined()).to.be.false;
+        expect(isTheStringUndefined(undefined)).to.be.false;
+        expect(isTheStringUndefined('undefined')).to.be.true;
       });
     });
 
@@ -102,6 +110,21 @@ describe('patternMatchers', function(){
   describe('definePattern', function(){
     describe('when the pattern is a RegExp', function(){
       it('should work like this', function(){
+        definePattern('theStringUndefined', /^undefined$/);
+        expect(_.isTheStringUndefined).to.be.a('function');
+        expect(_.isTheStringUndefined()).to.be.false;
+        expect(_.isTheStringUndefined(undefined)).to.be.false;
+        expect(_.isTheStringUndefined('undefined')).to.be.true;
+        expect().to.not.be.aTheStringUndefined();
+        expect(undefined).to.not.be.aTheStringUndefined();
+        expect('undefined').to.be.aTheStringUndefined();
+        expect(() => {
+          expect().to.be.aTheStringUndefined();
+        }).to.throw(
+          chai.AssertionError,
+          `expected undefined to match pattern theStringUndefined:`
+        );
+
         definePattern('stringWithLetterZ', /z/);
         expect(_.isStringWithLetterZ).to.be.a('function');
         expect(_.isStringWithLetterZ({})).to.be.false;
@@ -114,10 +137,16 @@ describe('patternMatchers', function(){
         expect('zp').to.be.aStringWithLetterZ();
         expect(() => {
           expect('peepee').to.be.aStringWithLetterZ();
-        }).to.throw(chai.AssertionError, `'peepee' didn't match target /z/`);
+        }).to.throw(
+          chai.AssertionError,
+          `expected 'peepee' to match pattern stringWithLetterZ`
+        );
         expect(() => {
           expect('zeebra').to.not.be.aStringWithLetterZ();
-        }).to.throw(chai.AssertionError, `expected 'zeebra' to not match pattern stringWithLetterZ`);
+        }).to.throw(
+          chai.AssertionError,
+          `expected 'zeebra' to not match pattern stringWithLetterZ`
+        );
       });
     });
 

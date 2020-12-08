@@ -28,6 +28,10 @@ Object.entries({
   });
 });
 
+function regExpPatternToFunction(regExp){
+  return string => _.isString(string) && regExp.test(string);
+}
+
 function inspectPattern(pattern){
   if (_.isFunction(pattern)) {
     if (_[pattern.name] === pattern) return `_.${pattern.name}`;
@@ -38,9 +42,8 @@ function inspectPattern(pattern){
 }
 
 function normalizePatternFunction(pattern){
-  // if pattern is a function make sure it returns a boolean (undefined->true)
-  if (!_.isFunction(pattern)) return pattern;
-  return target => {
+  if (_.isRegExp(pattern)) return regExpPatternToFunction(pattern);
+  if (_.isFunction(pattern)) return target => {
     try{
       const result = pattern(target);
       return result === undefined ? true : !!result;
@@ -49,11 +52,14 @@ function normalizePatternFunction(pattern){
       throw error;
     }
   };
+
+  return pattern;
 }
 
 
 const definePattern = (patternName, pattern) => {
   const { isName, aName } = definePattern.names(patternName);
+  if (_.isRegExp(pattern)) pattern = regExpPatternToFunction(pattern);
   const patternIsAFunction = _.isFunction(pattern);
   const patternTakesOptions = patternIsAFunction && pattern.length > 1;
 
