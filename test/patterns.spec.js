@@ -191,5 +191,20 @@ describe('patterns', function(){
     expect(_.isRecentDate(new Date(Date.now() - 2000))).to.be.false;
   });
 
+  testPatternWithoutOptions(
+    'trueOrUndefined',
+    [ , undefined, true],
+    [null, false],
+  );
+
+  testPatternWithoutOptions(
+    'organizationApikey',
+    ['abc', 'planetwork', 'thisisexactlythirtycharacterss'],
+    [
+      12, '', 'a', 'thisislongerthanthirtycharacters',
+      'no_underscores', 'also-no-dashes',
+    ],
+  );
+
 });
 

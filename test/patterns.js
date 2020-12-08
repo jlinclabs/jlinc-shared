@@ -5,6 +5,8 @@ const { _, expect, definePattern } = require('./matchers');
 definePattern('ISOdateString', /^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d.\d\d\dZ$/);
 definePattern('JWT', /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]*$/);
 definePattern('DID', /^did:jlinc:.+$/);
+definePattern('organizationApikey', /^[a-z]{2,30}$/i);
+
 
 definePattern('jsonStringMatching', (json, pattern) => {
   let object;
@@ -29,3 +31,7 @@ definePattern('recentDate', date =>
 definePattern('includedIn', (target, set) => {
   return [...set].includes(target);
 });
+
+definePattern('trueOrUndefined', value =>
+  value === true || value === undefined
+);

@@ -57,6 +57,19 @@ describe('patternMatchers', function(){
         });
       });
     });
+
+    context('when given an object', function(){
+      it('should treat it as a pattern', function(){
+        const isSoda = _.matchesPattern({brand: _.isString});
+        expect(isSoda).to.be.a('function');
+        expect(isSoda()).to.be.false;
+        expect(isSoda(undefined)).to.be.false;
+        expect(isSoda({})).to.be.false;
+        expect(isSoda({brand: 12})).to.be.false;
+        expect(isSoda({brand: 'Coke'})).to.be.true;
+      });
+    });
+
   });
 
   describe('_.isEvery', function(){
