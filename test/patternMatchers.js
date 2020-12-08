@@ -1,11 +1,15 @@
 'use strict';
 
-const { inspect } = require('util');
+const util = require('util');
 const chai = require('chai');
 const chaiMatchPattern = require('chai-match-pattern');
 const matchPattern = require('lodash-match-pattern');
 chai.use(chaiMatchPattern);
 const _ = chaiMatchPattern.getLodashModule();
+
+const inspect = object =>
+  util.inspect(object)
+    .replace(/\[Function: is(.+?)\]/, (s, m) => `is${m}` in _ ? `_.is${m}` : s);
 
 Object.entries({
   matchesPattern(pattern){
@@ -63,12 +67,6 @@ const definePattern = (aName, pattern) => {
   const patternIsAFunction = _.isFunction(pattern);
   const patternTakesOptions = patternIsAFunction && pattern.length > 1;
 
-  function decorateIsMethod(isMethod){
-    isMethod.pattern = pattern;
-    isMethod.toString = () => `${isName}()`;
-    return isMethod;
-  }
-
   let isMethod, aMethod;
   if (patternIsAFunction){
     aMethod = function(target, ...args){
@@ -81,7 +79,11 @@ const definePattern = (aName, pattern) => {
     };
 
     isMethod = patternTakesOptions
-      ? (...args) => decorateIsMethod(target => aMethod(target, ...args) === null)
+      ? (...args) => {
+        isMethod = target => aMethod(target, ...args) === null;
+        isMethod.toString = () => `${isName}(${args.map(inspect).join(', ')})`;
+        return isMethod;
+      }
       : target => aMethod(target) === null
     ;
   }else{
@@ -89,7 +91,10 @@ const definePattern = (aName, pattern) => {
     isMethod = target => aMethod(target) === null;
   }
 
-  _.mixin({ [isName]: decorateIsMethod(isMethod) });
+  isMethod.pattern = pattern;
+  isMethod.toString = () => `${isName}()`;
+
+  _.mixin({ [isName]: isMethod });
 
   chai.Assertion.addMethod(aName, function(...args){
     const check = aMethod(this._obj, ...args);
@@ -107,7 +112,7 @@ const definePattern = (aName, pattern) => {
 const capitalize = string => string[0].toUpperCase() + string.substr(1);
 
 definePattern.isName = function(patternName){
-  return patternName.match(/^an?(.+)$/)
+  return patternName.match(/^an?([A-Z]\w.+)$/)
     ? `is${RegExp.$1}`
     : `is${capitalize(patternName)}`
   ;
@@ -115,4 +120,4 @@ definePattern.isName = function(patternName){
 
 
 
-module.exports = { _, matchPattern, definePattern, chai };
+module.exports = { inspect, _, matchPattern, definePattern, chai };

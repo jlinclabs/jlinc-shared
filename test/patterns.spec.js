@@ -1,7 +1,7 @@
 'use strict';
 
-const { inspect } = require('util');
 const { _, expect, definePattern } = require('./matchers');
+const { inspect } = require('./patternMatchers');
 require('./patterns');
 
 const toJSON = JSON.stringify;
@@ -84,14 +84,16 @@ describe('patterns', function(){
       patternName,
       function(isName){
         cases.forEach(([options, trues, fales]) => {
-          context(`_.${isName}(${inspect(options)})`, function(){
+          const expectedToString = `${isName}(${inspect(options)})`;
+
+          context(`_.${expectedToString}`, function(){
             const matcher = _[isName](options);
             it('should throw a nice error when it fails', function(){
               expect(matcher).to.be.a('function');
-              expect(matcher.toString()).to.equal(`${isName}()`);
+              expect(matcher.toString()).to.equal(expectedToString);
               expect(() => {
                 expect(fales[0]).to.matchPattern(matcher);
-              }).to.throw(` didn't match target '${isName}()'`);
+              }).to.throw(` didn't match target '${isName}`);
             });
             testIsMatcher(matcher, trues, fales);
           });
@@ -174,7 +176,7 @@ describe('patterns', function(){
   it('aDateLessThanXAgo', function(){
     const isDateLessThan1000Ago = _.isDateLessThanXAgo(1000);
     expect(isDateLessThan1000Ago).to.be.a('function');
-    expect(isDateLessThan1000Ago+'').to.be.equal('isDateLessThanXAgo()');
+    expect(isDateLessThan1000Ago+'').to.be.equal('isDateLessThanXAgo(1000)');
     expect(isDateLessThan1000Ago()).to.be.false;
     expect(isDateLessThan1000Ago('yestuday')).to.be.false;
     expect(isDateLessThan1000Ago(new Date)).to.be.true;

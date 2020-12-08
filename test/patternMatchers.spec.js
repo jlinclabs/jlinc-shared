@@ -127,6 +127,10 @@ describe('patternMatchers', function(){
         ['theStringUndefined', 'isTheStringUndefined'],
         ['anOrganization', 'isOrganization'],
         ['aUser', 'isUser'],
+        ['animal', 'isAnimal'],
+        ['anAnimal', 'isAnimal'],
+        ['aApple', 'isApple'],
+        ['aapple', 'isAapple'],
       ].forEach(([aName, isName]) => {
         expect(definePattern.isName(aName)).to.equal(isName);
       });
@@ -291,7 +295,7 @@ describe('patternMatchers', function(){
             tea: _.isAlienBodyNamed('Tea')
           });
         }
-      ).to.throw(`{tea: 'in a pot'} didn't match target {tea: 'isAlienBodyNamed()'}`);
+      ).to.throw(`{tea: 'in a pot'} didn't match target {tea: "isAlienBodyNamed('Tea')"}`);
     });
 
   });
