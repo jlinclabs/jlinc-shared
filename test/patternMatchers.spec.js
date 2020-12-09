@@ -19,6 +19,12 @@ function testIsUUID(isUUID){
 
 describe('patternMatchers', function(){
   describe('_.matchesPattern', function(){
+    context('when given an undefined pattern', function(){
+      it('should throw', function(){
+        expect(()=>{ _.matchesPattern(); })
+          .to.throw(Error, '_.matchesPattern given undefined');
+      });
+    });
     context('when given a RegExp', function(){
       it('should return an isMatcher function for it', function(){
         const isUUID = _.matchesPattern(UUID_REGEXP);
@@ -73,6 +79,12 @@ describe('patternMatchers', function(){
   });
 
   describe('_.isEvery', function(){
+    context('when given an undefined pattern', function(){
+      it('should throw', function(){
+        expect(()=>{ _.isEvery(); })
+          .to.throw(Error, '_.isEvery given undefined');
+      });
+    });
     it('it should generate a matcher for all given patterns', function(){
       const isUUID = _.isEvery(_.isString, UUID_REGEXP);
       testIsUUID(isUUID);
@@ -80,6 +92,12 @@ describe('patternMatchers', function(){
   });
 
   describe('_.isSome', function(){
+    context('when given an undefined pattern', function(){
+      it('should throw', function(){
+        expect(()=>{ _.isSome(); })
+          .to.throw(Error, '_.isSome given undefined');
+      });
+    });
     it('it should generate a matcher for all given patterns', function(){
       const isStringOrNumber = _.isSome(_.isString, _.isNumber);
       expect(isStringOrNumber).to.be.a('function');
@@ -101,6 +119,36 @@ describe('patternMatchers', function(){
           number: isStringOrNumber
         });
       }).to.throw(`{number: []} didn't match target {number: 'isSome(_.isString, _.isNumber)'}`);
+    });
+
+    it('_.isSome', function(){
+      expect(_.isSome).to.be.a('function');
+
+      expect(() => { _.isSome(); }).to.throw();
+      expect(() => { _.isSome(undefined); }).to.throw();
+      expect(() => { _.isSome(_.isString, undefined); }).to.throw();
+
+      expect(_.isSome(_.isString)).to.be.a('function');
+      expect(_.isSome(_.isString)('x')).to.be.true;
+      expect(_.isSome(_.isString)(1)).to.be.false;
+      expect(_.isSome(_.isString, _.isInteger)('x')).to.be.true;
+      expect(_.isSome(_.isString, _.isInteger)(1)).to.be.true;
+      expect(_.isSome(_.isString, _.isInteger)()).to.be.false;
+      expect(_.isSome(_.isString, _.isInteger)([])).to.be.false;
+
+      const example1 = _.isSome(
+        _.isNull,
+        _.matchesPattern({ type: 'mobile' }),
+        _.matchesPattern({ type: 'email' }),
+      );
+      expect(example1()).to.be.false;
+      expect(example1(null)).to.be.true;
+      expect(example1({})).to.be.false;
+      expect(example1(1)).to.be.false;
+      expect(example1('')).to.be.false;
+      expect(example1({ type: '' })).to.be.false;
+      expect(example1({ type: 'mobile' })).to.be.true;
+      expect(example1({ type: 'email' })).to.be.true;
     });
   });
 

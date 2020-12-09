@@ -13,12 +13,24 @@ const inspect = object =>
 
 Object.entries({
   matchesPattern(pattern){
+    if (typeof pattern === 'undefined')
+      throw new Error('_.matchesPattern given undefined');
     return target => matchPattern(target, normalizePatternFunction(pattern)) === null;
   },
   isEvery(...patterns){
+    if (
+      patterns.length === 0 ||
+      patterns.some(p => typeof p === 'undefined')
+    )
+      throw new Error('_.isEvery given undefined pattern');
     return target => patterns.every(pattern => _.matchesPattern(pattern)(target));
   },
   isSome(...patterns){
+    if (
+      patterns.length === 0 ||
+      patterns.some(p => typeof p === 'undefined')
+    )
+      throw new Error('_.isSome given undefined pattern');
     return target => patterns.some(pattern => _.matchesPattern(pattern)(target));
   },
 }).forEach(function([key, value]){
