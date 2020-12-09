@@ -73,6 +73,26 @@ describe('patternMatchers', function(){
         expect(isSoda({})).to.be.false;
         expect(isSoda({brand: 12})).to.be.false;
         expect(isSoda({brand: 'Coke'})).to.be.true;
+
+        expect(_.matchesPattern(45)()).to.be.false;
+        expect(_.matchesPattern(45)(45)).to.be.true;
+        expect(_.matchesPattern({a:45})({a:45})).to.be.true;
+        expect(_.matchesPattern({a:_.isInteger})({a:45})).to.be.true;
+        expect(_.matchesPattern({a:_.isInteger})({a:'x'})).to.be.false;
+        expect(_.matchesPattern({a:_.isInteger})({})).to.be.false;
+        const nesting = _.matchesPattern({
+          a: _.matchesPattern({
+            b: _.matchesPattern({
+              c: 99,
+            })
+          })
+        });
+        expect(nesting({a: { b: { c: 99 } } })).to.be.true;
+        expect(nesting({a: { b: { c: 11 } } })).to.be.false;
+        expect(nesting({a: { b: {} } })).to.be.false;
+        expect(nesting({a: {} })).to.be.false;
+        expect(nesting({})).to.be.false;
+        expect(nesting()).to.be.false;
       });
     });
 
