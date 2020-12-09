@@ -2,6 +2,9 @@
 
 const { _, expect, definePattern } = require('./matchers');
 
+_.isUndefinedOr = pattern =>
+  target => _.isUndefined(target) || pattern(target);
+
 definePattern('anISOdateString', /^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d.\d\d\dZ$/);
 definePattern('aJWT', /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]*$/);
 definePattern('aDID', /^did:jlinc:.+$/);

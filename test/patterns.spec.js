@@ -214,5 +214,18 @@ describe('patterns', function(){
     ],
   );
 
+  it('_.isUndefinedOr', function(){
+    expect(_.isUndefinedOr).to.be.a('function');
+    const undefinedOrString = _.isUndefinedOr(_.isString);
+    expect(undefinedOrString).to.be.a('function');
+    expect(undefinedOrString(1)).to.be.false;
+    expect(undefinedOrString(null)).to.be.false;
+    expect(undefinedOrString([])).to.be.false;
+    expect(undefinedOrString()).to.be.true;
+    expect(undefinedOrString(undefined)).to.be.true;
+    expect(undefinedOrString('undefined')).to.be.true;
+    expect(undefinedOrString('')).to.be.true;
+  });
+
 });
 
