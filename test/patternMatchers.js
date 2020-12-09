@@ -44,6 +44,9 @@ Object.entries({
   });
 });
 
+_.isOneOf = _.isSome;
+_.isAll = _.isEvery;
+
 function regExpPatternToFunction(regExp){
   return string => _.isString(string) && regExp.test(string);
 }
