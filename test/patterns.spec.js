@@ -207,7 +207,7 @@ describe('patterns', function(){
 
   testPatternWithoutOptions(
     'anOrganizationApikey',
-    ['abc', 'planetwork', 'thisisexactlythirtycharacterss'],
+    ['abc', 'work4fun', 'thisisexactlythirtycharacterss'],
     [
       12, '', 'a', 'thisislongerthanthirtycharacters',
       'no_underscores', 'also-no-dashes',
