@@ -119,7 +119,7 @@ describe('patterns', function(){
   );
 
   testPatternWithoutOptions(
-    'anISOdateString',
+    'anISODateString',
     ['2020-12-04T21:18:55.821Z', (new Date).toISOString()],
     [...randomObjects()],
   );
@@ -227,5 +227,10 @@ describe('patterns', function(){
     expect(undefinedOrString('')).to.be.true;
   });
 
+  testPatternWithoutOptions(
+    'aUid',
+    ['1da3ab2a9940456fc8ed8a1a617311a3'],
+    [1, null, [], undefined, '128u095u95j905j59j', '1da3ab2a9940456fc8ed8a1a617311a*'],
+  );
 });
 

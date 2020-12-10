@@ -5,11 +5,10 @@ const { _, expect, definePattern } = require('./matchers');
 _.isUndefinedOr = pattern =>
   target => _.isUndefined(target) || pattern(target);
 
-definePattern('anISOdateString', /^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d.\d\d\dZ$/);
+definePattern('anISODateString', /^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d.\d\d\dZ$/);
 definePattern('aJWT', /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]*$/);
 definePattern('aDID', /^did:jlinc:.+$/);
 definePattern('anOrganizationApikey', /^[a-z]{2,30}$/i);
-
 
 definePattern('aJsonStringMatching', (json, pattern) => {
   let object;
@@ -38,3 +37,5 @@ definePattern('includedIn', (target, set) =>
 definePattern('trueOrUndefined', value =>
   value === true || value === undefined
 );
+
+definePattern('aUid', /^[a-z0-9]{32}$/);
