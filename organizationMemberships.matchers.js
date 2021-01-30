@@ -1,12 +1,13 @@
 'use strict';
 
-const { _, expect, definePattern } = require('./matchers');
-require('./patterns');
+const { _, expect, definePattern } = require('./test/matchers');
+require('./createUid.matchers');
+require('./organizations.matchers');
 
 definePattern(
   'anOrganizationMembership',
   {
-    uid: _.isUid,
+    uid: _.isUID,
     createdAt: _.isISODateString,
     organizationApikey: _.isOrganizationApikey,
     memberUserDid: _.isDID,

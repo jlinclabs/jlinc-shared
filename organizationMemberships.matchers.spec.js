@@ -1,6 +1,7 @@
 'use strict';
 
-const { expect } = require('./matchers');
+const { expect } = require('./test/matchers');
+
 require('./organizationMemberships.matchers');
 
 describe('organizationMemberships.matchers', function(){
@@ -28,7 +29,7 @@ describe('organizationMemberships.matchers', function(){
     expect(failingCase).to.not.be.anOrganizationMembership();
     expect(() =>
       expect(failingCase).to.be.anOrganizationMembership()
-    ).to.throw(`{uid: undefined} didn't match target {uid: 'isUid()'}`);
+    ).to.throw(`{uid: undefined} didn't match target {uid: 'isUID()'}`);
   });
 
   it('anOrganizationCuratorMembership', function() {

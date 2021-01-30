@@ -4,18 +4,43 @@ const util = require('util');
 const chai = require('chai');
 const chaiMatchPattern = require('chai-match-pattern');
 const matchPattern = require('lodash-match-pattern');
+
 chai.use(chaiMatchPattern);
-const _ = chaiMatchPattern.getLodashModule();
+chai.use(require('chai-string'));
+chai.use(require('chai-as-promised'));
+chai.use(require('chai-http'));
+
+const _ = (() => {
+  const lodash = chaiMatchPattern.getLodashModule();
+  lodash.mixin = lodash.mixin.bind(lodash);
+  const proxy = new Proxy(lodash, {
+    get(_, prop){
+      if (
+        typeof prop === 'symbol' ||
+        prop in lodash ||
+        ['inspect'].includes(prop)
+      ) return Reflect.get(...arguments);
+      throw new Error(`_.${prop} is not defined!`);
+    },
+    set(){
+      throw new Error('Setting on _ directly is forbidden. Use _.mixin({})');
+    }
+  });
+  return proxy;
+})();
 
 const inspect = object =>
   util.inspect(object)
-    .replace(/\[Function: is(.+?)\]/, (s, m) => `is${m}` in _ ? `_.is${m}` : s);
+    .replace(/\[Function: is(.+?)\]/g, (s, m) => `is${m}` in _ ? `_.is${m}` : s);
 
 Object.entries({
   matchesPattern(pattern){
     if (typeof pattern === 'undefined')
       throw new Error('_.matchesPattern given undefined');
-    return target => matchPattern(target, normalizePatternFunction(pattern)) === null;
+    return target => {
+      if (_.isPlainObject(pattern) && !_.isPlainObject(target)) return false;
+      return matchPattern(target, normalizePatternFunction(pattern)) === null;
+    };
   },
   isEvery(...patterns){
     if (
@@ -44,8 +69,19 @@ Object.entries({
   });
 });
 
-_.isOneOf = _.isSome;
-_.isAll = _.isEvery;
+_.mixin({
+  isOneOf: _.isSome,
+  isAll: _.isEvery,
+  isUndefinedOr(pattern){
+    if (typeof pattern === 'undefined')
+      throw new Error('_.isUndefinedOr cannot be given undefined');
+    const matcher = target =>
+      _.isUndefined(target) || _.matchesPattern(pattern)(target);
+    matcher.toString = () => `isUndefinedOr(${inspectPattern(pattern)})`;
+    return matcher;
+  },
+});
+
 
 function regExpPatternToFunction(regExp){
   return string => _.isString(string) && regExp.test(string);
@@ -53,7 +89,10 @@ function regExpPatternToFunction(regExp){
 
 function inspectPattern(pattern){
   if (_.isFunction(pattern)) {
-    if (_[pattern.name] === pattern) return `_.${pattern.name}`;
+    if (
+      pattern.name in _ &&
+      _[pattern.name] === pattern
+    ) return `_.${pattern.name}`;
     return pattern.name || pattern.toString();
   }
   return inspect(pattern)
@@ -77,7 +116,11 @@ function normalizePatternFunction(pattern){
 
 
 const definePattern = (aName, pattern) => {
+  if (typeof aName !== 'string' || !aName) throw new Error('aName is required');
+  if (typeof pattern === 'undefined') throw new Error('pattern is required');
   const isName = definePattern.isName(aName);
+  if (isName in _) throw new Error(`_.${isName} already exists!`);
+  if (aName in chai.Assertion.prototype) throw new Error(`chai.Assertion.${aName} already exists!`);
   if (_.isRegExp(pattern)) pattern = regExpPatternToFunction(pattern);
   const patternIsAFunction = _.isFunction(pattern);
   const patternTakesOptions = patternIsAFunction && pattern.length > 1;
@@ -102,7 +145,10 @@ const definePattern = (aName, pattern) => {
       : target => aMethod(target) === null
     ;
   }else{
-    aMethod = target => matchPattern(target, pattern);
+    aMethod = target => {
+      if (_.isPlainObject(pattern) && !_.isPlainObject(target)) return false;
+      return matchPattern(target, normalizePatternFunction(pattern));
+    };
     isMethod = target => aMethod(target) === null;
   }
 
@@ -133,6 +179,13 @@ definePattern.isName = function(patternName){
   ;
 };
 
+const { expect } = chai;
 
-
-module.exports = { inspect, _, matchPattern, definePattern, chai };
+module.exports = {
+  chai,
+  expect,
+  _,
+  matchPattern,
+  definePattern,
+  inspect,
+};

@@ -1,6 +1,6 @@
 'use strict';
 
-const { _, definePattern, expect, chai } = require('./matchers');
+const { chai, expect, _, definePattern } = require('./helpers');
 
 const UUID_REGEXP = /^[\w-_]+\.[\w-_]+\.[\w-_]*$/;
 
@@ -17,8 +17,35 @@ function testIsUUID(isUUID){
   expect(isUUID('xxx.yyy.zzz')).to.be.true;
 }
 
-describe('patternMatchers', function(){
+describe('test/matchers/helpers', function(){
+
+  describe('_', function(){
+    it('should throw when accessing undefined properties', function(){
+      expect(() => { _.isString; }).to.not.throw();
+      expect(() => { _.isstring; }).to.throw('_.isstring is not defined!');
+    });
+    it('should throw when trying to set any properties', function(){
+      expect(() => { _.isString; }).to.not.throw();
+      expect(() => { _.isString = 12; }).to.throw('Setting on _ directly is forbidden. Use _.mixin({})');
+      expect(() => { _.x = 12; }).to.throw();
+      expect(() => { _['x'] = 12; }).to.throw();
+    });
+  });
   describe('_.matchesPattern', function(){
+    context('when target is false', function(){
+      it('should not act weird', function(){
+        const isBoolean = _.matchesPattern(_.isBoolean);
+        expect(isBoolean).to.be.a('function');
+        expect(isBoolean()).to.be.false;
+        expect(isBoolean(true)).to.be.true;
+        expect(isBoolean(false)).to.be.true;
+        const isDude = _.matchesPattern({
+          name: _.isUndefinedOr(_.isString),
+          bench: _.isUndefinedOr(_.isNumber),
+        });
+        expect(isDude(false)).to.be.false;
+      });
+    });
     context('when given an undefined pattern', function(){
       it('should throw', function(){
         expect(()=>{ _.matchesPattern(); })
@@ -189,6 +216,24 @@ describe('patternMatchers', function(){
   });
 
   describe('definePattern', function(){
+    context('when given bad arguments', function(){
+      it('should throw', function(){
+        expect(() => { definePattern(); }).to.throw('aName is required');
+        expect(() => { definePattern(24); }).to.throw('aName is required');
+        expect(() => { definePattern(''); }).to.throw('aName is required');
+        expect(() => { definePattern('llama'); }).to.throw('pattern is required');
+      });
+    });
+    context('when given a name that would clobber an exsting _ property', function(){
+      it('should throw', function(){
+        expect(() => { definePattern('string', /.+/); }).to.throw('_.isString already exists!');
+      });
+    });
+    context('when given a name that would clobber an exsting chai matcher', function(){
+      it('should throw', function(){
+        expect(() => { definePattern('throw', /.+/); }).to.throw('chai.Assertion.throw already exists!');
+      });
+    });
     it('.isName', function(){
       [
         ['aCar', 'isCar'],
@@ -320,6 +365,20 @@ describe('patternMatchers', function(){
       });
     });
 
+    describe('when the pattern is a plain object', function(){
+      it('should work like this', function(){
+        definePattern('anAllOptionalExample', {
+          switch: _.isSome(_.isUndefined, {enabled: _.isBoolean}),
+        });
+        expect(_.isAllOptionalExample).to.be.a('function');
+        expect(_.isAllOptionalExample()).to.be.false;
+        expect(_.isAllOptionalExample(true)).to.be.false;
+        expect(_.isAllOptionalExample(false)).to.be.false;
+        expect(_.isAllOptionalExample({})).to.be.true;
+        expect(_.isAllOptionalExample({switch: { enabled: false}})).to.be.true;
+      });
+    });
+
     it('complex patterns should be composable', function() {
       definePattern('aHand', { fingers: _.isNumber });
       definePattern('aFoot', { toes: _.isNumber });
@@ -366,6 +425,54 @@ describe('patternMatchers', function(){
       ).to.throw(`{tea: 'in a pot'} didn't match target {tea: "isAlienBodyNamed('Tea')"}`);
     });
 
+  });
+
+  it('_.isUndefinedOr', function(){
+    expect(_.isUndefinedOr).to.be.a('function');
+    expect(() => { _.isUndefinedOr(); })
+      .to.throw('_.isUndefinedOr cannot be given undefined');
+    const isUndefinedOrString = _.isUndefinedOr(_.isString);
+    expect(isUndefinedOrString).to.be.a('function');
+    expect(isUndefinedOrString(1)).to.be.false;
+    expect(isUndefinedOrString(null)).to.be.false;
+    expect(isUndefinedOrString([])).to.be.false;
+    expect(isUndefinedOrString()).to.be.true;
+    expect(isUndefinedOrString(undefined)).to.be.true;
+    expect(isUndefinedOrString('undefined')).to.be.true;
+    expect(isUndefinedOrString('')).to.be.true;
+    const isUndefinedOrTrue = _.isUndefinedOr(true);
+    expect(isUndefinedOrTrue()).to.be.true;
+    expect(isUndefinedOrTrue(undefined)).to.be.true;
+    expect(isUndefinedOrTrue(true)).to.be.true;
+    expect(isUndefinedOrTrue([])).to.be.false;
+    expect(isUndefinedOrTrue(false)).to.be.false;
+    const bob = { name: 'Bob' };
+    const isUndefinedOrBob = _.isUndefinedOr(bob);
+    expect(isUndefinedOrBob()).to.be.true;
+    expect(isUndefinedOrBob(undefined)).to.be.true;
+    expect(isUndefinedOrBob(bob)).to.be.true;
+    expect(isUndefinedOrBob([])).to.be.false;
+    expect(isUndefinedOrBob(false)).to.be.false;
+    const isUndefinedOrSized = _.isUndefinedOr({ size: _.isNumber });
+    expect(isUndefinedOrSized()).to.be.true;
+    expect(isUndefinedOrSized(undefined)).to.be.true;
+    expect(isUndefinedOrSized({size:12})).to.be.true;
+    expect(isUndefinedOrSized({})).to.be.false;
+    expect(isUndefinedOrSized([])).to.be.false;
+    expect(isUndefinedOrSized(false)).to.be.false;
+    const isNested = _.isUndefinedOr({
+      name: _.isUndefinedOr(_.isString),
+      size: _.isUndefinedOr(_.isNumber),
+    });
+    expect(isNested()).to.be.true;
+    expect(isNested(undefined)).to.be.true;
+    expect(isNested({})).to.be.true;
+    expect(isNested({size:12})).to.be.true;
+    expect(isNested({name:'x'})).to.be.true;
+    expect(isNested({size:'x'})).to.be.false;
+    expect(isNested({name:12})).to.be.false;
+    expect(isNested([])).to.be.false;
+    expect(isNested(false)).to.be.false;
   });
 
 });

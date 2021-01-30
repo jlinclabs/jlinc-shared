@@ -1,14 +1,7 @@
 'use strict';
 
-const chai = require('chai');
-const { _, matchPattern, definePattern } = require('./patternMatchers');
-const expect = chai.expect;
+require('./matchers/core');
+require('./matchers/date');
+require('./matchers/jwt');
 
-module.exports = {
-  _,
-  chai,
-  expect,
-  definePattern,
-  matchPattern,
-};
-
+module.exports = require('./matchers/helpers');
