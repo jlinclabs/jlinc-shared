@@ -7,7 +7,7 @@ const {
   createCrypto,
 } = require('./crypto');
 
-describe('lib/crypto', function() {
+describe('crypto', function() {
 
   describe('createSecret', function() {
     it('should create a b64 encoded random string', function(){

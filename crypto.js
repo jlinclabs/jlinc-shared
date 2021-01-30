@@ -42,7 +42,6 @@ function createCrypto(encodedKey){
   }
 
   return {
-    createSecret,
     encrypt,
     decrypt,
     encryptString,
