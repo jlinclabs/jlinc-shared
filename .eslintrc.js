@@ -48,7 +48,7 @@ module.exports = {
     "no-bitwise": 2,
     "eqeqeq": 2,
     "wrap-iife": [ 2, "any" ],
-    "new-cap": 2,
+    "new-cap": 0,
     "no-caller": 2,
     "no-undef": 0,
     "no-debugger": 2,
