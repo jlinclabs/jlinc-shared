@@ -63,12 +63,11 @@ Object.entries({
   });
 });
 
-console.log(require.main)
-const REPO_ROOT = Path.resolve(__dirname, '../..');
+const rootPath = require.main.path.split('/node_modules')[0]
 const getSpecCaller = () =>
   (new Error).stack.split('\n')
     .find(l => l.match(/(\/.+\.spec\.js:\d+)/))
-      ? Path.relative(REPO_ROOT, RegExp.$1)
+      ? Path.relative(rootPath, RegExp.$1)
       : '[unknown file]'
 ;
 
