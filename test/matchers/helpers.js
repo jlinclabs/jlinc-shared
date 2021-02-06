@@ -63,6 +63,7 @@ Object.entries({
   });
 });
 
+console.log(require.main)
 const REPO_ROOT = Path.resolve(__dirname, '../..');
 const getSpecCaller = () =>
   (new Error).stack.split('\n')
