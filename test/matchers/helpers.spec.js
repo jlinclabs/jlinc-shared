@@ -1,6 +1,6 @@
 'use strict';
 
-const { chai, expect, _, definePattern } = require('./helpers');
+const { chai, expect, _, createPattern, definePattern } = require('./helpers');
 
 const UUID_REGEXP = /^[\w-_]+\.[\w-_]+\.[\w-_]*$/;
 
@@ -215,12 +215,159 @@ describe('test/matchers/helpers', function(){
     });
   });
 
+  describe('createPattern', function(){
+    context('when given bad arguments', function(){
+      it('should throw', function(){
+        expect(() => { createPattern(); }).to.throw('pattern is required');
+      });
+    });
+    context('when given a function pattern', function(){
+      it('should generate dynamic pattern matcher functions', function(){
+        const isMagicString = createPattern(target => {
+          expect(target).to.be.a('string');
+          expect(target).to.match(/magic/);
+        });
+        const expectToBeAMagicString = isMagicString.expect;
+
+        expect(isMagicString).to.be.a('function');
+        expect(() => { isMagicString(); }).to.not.throw();
+        expect(isMagicString()).to.be.false;
+        expect(isMagicString('magic')).to.be.true;
+
+        expect(expectToBeAMagicString).to.be.a('function');
+        expect(() =>{ expectToBeAMagicString(); }).to.throw(
+          chai.AssertionError,
+          `undefined didn't match target target => {\n` +
+          `          expect(target).to.be.a('string');\n` +
+          `          expect(target).to.match(/magic/);\n` +
+          `        }: error=AssertionError: expected undefined to be a string`
+        );
+
+        expect(() =>{ expectToBeAMagicString('love'); }).to.throw(
+          chai.AssertionError,
+          `'love' didn't match target target => {\n` +
+          `          expect(target).to.be.a('string');\n` +
+          `          expect(target).to.match(/magic/);\n` +
+          `        }: error=AssertionError: expected 'love' to match /magic/`
+        );
+      });
+    });
+    context('when given a plain object pattern', function(){
+      it('should generate dynamic pattern matcher functions', function(){
+        const isLego = createPattern({material: 'plastic'});
+        const expectToBeALego = isLego.expect;
+
+        expect(isLego()).to.be.false;
+        expect(() => { isLego(); }).to.not.throw();
+        expect(() => { expectToBeALego(); })
+          .to.throw(`undefined didn't match target { material: 'plastic' }`);
+        expect(() => { expectToBeALego(); }).to.throw(
+          chai.AssertionError,
+          `undefined didn't match target { material: 'plastic' }`
+        );
+        expect(() => { expectToBeALego({ material: 'metal' }); }).to.throw(
+          chai.AssertionError,
+          `{material: 'metal'} didn't match target {material: 'plastic'}`
+        );
+        expect(() => { expectToBeALego({ material: 'plastic' }); }).to.not.throw();
+      });
+    });
+    context('when given an array pattern', function(){
+      it('should generate dynamic pattern matcher functions', function(){
+        const isNameAndAge = createPattern([_.isString, _.isInteger]);
+        const expectToBeNameAndAge = isNameAndAge.expect;
+        expect(isNameAndAge()).to.be.false;
+        expect(isNameAndAge([])).to.be.false;
+        expect(isNameAndAge(['Jared'])).to.be.false;
+        expect(isNameAndAge(['Jared', 40])).to.be.true;
+        expect(isNameAndAge([, 40])).to.be.false;
+        expect(
+          () =>{ expectToBeNameAndAge(); }
+        ).to.throw(
+          chai.AssertionError,
+          `undefined didn't match target [ _.isString, _.isInteger ]: ` +
+          `error=AssertionError: expected undefined to be an array`
+        );
+        expect(
+          () =>{ expectToBeNameAndAge([]); }
+        ).to.throw(
+          chai.AssertionError,
+          `[] didn't match target [ _.isString, _.isInteger ]`
+        );
+        expect(
+          () =>{ expectToBeNameAndAge([19]); }
+        ).to.throw(
+          chai.AssertionError,
+          `[ 19 ] didn't match target [ _.isString, _.isInteger ]`
+        );
+        expect(
+          () =>{ expectToBeNameAndAge(['Jared', 40]); }
+        ).to.not.throw();
+      });
+    });
+    context('when given a string pattern', function(){
+      it('should generate dynamic pattern matcher functions', function(){
+        const key = 'e5c41363b5dda38601f929af13c92c77c318e68d';
+        const isMyPivateKey = createPattern(key);
+        const expectToBeMyPrivateKey = isMyPivateKey.expect;
+        expect(isMyPivateKey()).to.be.false;
+        expect(isMyPivateKey('')).to.be.false;
+        expect(isMyPivateKey('Jared')).to.be.false;
+        expect(isMyPivateKey(key)).to.be.true;
+        expect(
+          () =>{ expectToBeMyPrivateKey(); }
+        ).to.throw(
+          chai.AssertionError,
+          `undefined didn't match target '${key}'`
+        );
+        expect(
+          () =>{ expectToBeMyPrivateKey('123213213213'); }
+        ).to.throw(
+          chai.AssertionError,
+          `'123213213213' didn't match target '${key}'`
+        );
+        expect(
+          () =>{ expectToBeMyPrivateKey(key); }
+        ).to.not.throw();
+      });
+    });
+    context('when given a regecp pattern', function(){
+      it('should generate dynamic pattern matcher functions', function(){
+        const exampleDotComURLRegexp = /^https?:\/\/example\.com(\/.+)?$/;
+        const isExampleDotComURL = createPattern(exampleDotComURLRegexp);
+        const expectToBeAExampleDotComURL = isExampleDotComURL.expect;
+        expect(isExampleDotComURL()).to.be.false;
+        expect(isExampleDotComURL('')).to.be.false;
+        expect(isExampleDotComURL('Jared')).to.be.false;
+        expect(isExampleDotComURL('https://example.com')).to.be.true;
+        expect(isExampleDotComURL('http://example.com')).to.be.true;
+        expect(isExampleDotComURL('https://example.com/whatever.html')).to.be.true;
+        expect(isExampleDotComURL('http://example.com/whatever.html')).to.be.true;
+        expect(
+          () =>{ expectToBeAExampleDotComURL(); }
+        ).to.throw(
+          chai.AssertionError,
+          `undefined didn't match target ${exampleDotComURLRegexp}`
+        );
+        expect(
+          () =>{ expectToBeAExampleDotComURL('123213213213'); }
+        ).to.throw(
+          chai.AssertionError,
+          `'123213213213' didn't match target ${exampleDotComURLRegexp}`
+        );
+        expect(
+          () =>{ expectToBeAExampleDotComURL('https://example.com/whatever.html'); }
+        ).to.not.throw();
+      });
+    });
+  });
+
   describe('definePattern', function(){
     context('when given bad arguments', function(){
       it('should throw', function(){
-        expect(() => { definePattern(); }).to.throw('aName is required');
-        expect(() => { definePattern(24); }).to.throw('aName is required');
-        expect(() => { definePattern(''); }).to.throw('aName is required');
+        expect(() => { definePattern(); }).to.throw('patternName is required');
+        expect(() => { definePattern(24); }).to.throw('patternName is required');
+        expect(() => { definePattern(''); }).to.throw('patternName is required');
         expect(() => { definePattern('llama'); }).to.throw('pattern is required');
       });
     });
@@ -244,8 +391,8 @@ describe('test/matchers/helpers', function(){
         ['anAnimal', 'isAnimal'],
         ['aApple', 'isApple'],
         ['aapple', 'isAapple'],
-      ].forEach(([aName, isName]) => {
-        expect(definePattern.isName(aName)).to.equal(isName);
+      ].forEach(([patternName, isName]) => {
+        expect(definePattern.isName(patternName)).to.equal(isName);
       });
     });
     describe('when the pattern is a RegExp', function(){
@@ -262,7 +409,7 @@ describe('test/matchers/helpers', function(){
           expect().to.be.theStringUndefined();
         }).to.throw(
           chai.AssertionError,
-          `expected undefined to match pattern theStringUndefined:`
+          `expected undefined to match pattern theStringUndefined(): AssertionError: expected undefined to be a string`,
         );
 
         definePattern('aStringWithLetterZ', /z/);
@@ -354,7 +501,7 @@ describe('test/matchers/helpers', function(){
           expect({}).to.be.aMagicShoe('this is wrong');
         }).to.throw(
           chai.AssertionError,
-          `expected {} to match pattern aMagicShoe: AssertionError: {schoolOfMagic: undefined} didn't match target {schoolOfMagic: 'this is wrong'}`
+          `expected {} to match pattern aMagicShoe('this is wrong'): AssertionError: {schoolOfMagic: undefined} didn't match target {schoolOfMagic: 'this is wrong'}`
         );
         expect(() => {
           expect({ schoolOfMagic: 'magic is a lie' }).to.be.aMagicShoe('this is wrong');

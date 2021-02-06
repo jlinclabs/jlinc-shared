@@ -2,6 +2,7 @@
 
 const util = require('util');
 const chai = require('chai');
+const AssertionError = require('assertion-error');
 const chaiMatchPattern = require('chai-match-pattern');
 const matchPattern = require('lodash-match-pattern');
 
@@ -37,10 +38,16 @@ Object.entries({
   matchesPattern(pattern){
     if (typeof pattern === 'undefined')
       throw new Error('_.matchesPattern given undefined');
-    return target => {
-      if (_.isPlainObject(pattern) && !_.isPlainObject(target)) return false;
-      return matchPattern(target, normalizePatternFunction(pattern)) === null;
-    };
+    if (_.isRegExp(pattern))
+      return target => _.isString(target) && pattern.test(target);
+
+    if (_.isFunction(pattern))
+      return target => catchAssertionErrors(() => pattern(target) !== false);
+
+    return target =>
+      typeof pattern === typeof target &&
+      matchPattern(target, pattern) === null
+    ;
   },
   isEvery(...patterns){
     if (
@@ -82,11 +89,6 @@ _.mixin({
   },
 });
 
-
-function regExpPatternToFunction(regExp){
-  return string => _.isString(string) && regExp.test(string);
-}
-
 function inspectPattern(pattern){
   if (_.isFunction(pattern)) {
     if (
@@ -99,75 +101,109 @@ function inspectPattern(pattern){
     .replace(/\[Function: is(.+?)\]/, (s, m) => `is${m}` in _ ? `_.is${m}` : s);
 }
 
-function normalizePatternFunction(pattern){
-  if (_.isRegExp(pattern)) return regExpPatternToFunction(pattern);
-  if (_.isFunction(pattern)) return target => {
-    try{
-      const result = pattern(target);
-      return result === undefined ? true : !!result;
-    }catch(error){
-      if (error instanceof chai.AssertionError) return false;
-      throw error;
-    }
-  };
-
-  return pattern;
+function catchAssertionErrors(block){
+  try{ return block(); }catch(error){
+    if (error instanceof AssertionError) return false;
+    throw error;
+  }
 }
 
+const inspectArgs = args => args.map(inspect).join(', ');
 
-const definePattern = (aName, pattern) => {
-  if (typeof aName !== 'string' || !aName) throw new Error('aName is required');
+const createPattern = pattern => {
   if (typeof pattern === 'undefined') throw new Error('pattern is required');
-  const isName = definePattern.isName(aName);
-  if (isName in _) throw new Error(`_.${isName} already exists!`);
-  if (aName in chai.Assertion.prototype) throw new Error(`chai.Assertion.${aName} already exists!`);
-  if (_.isRegExp(pattern)) pattern = regExpPatternToFunction(pattern);
+
   const patternIsAFunction = _.isFunction(pattern);
   const patternTakesOptions = patternIsAFunction && pattern.length > 1;
 
-  let isMethod, aMethod;
-  if (patternIsAFunction){
-    aMethod = function(target, ...args){
-      try{
-        return pattern(target, ...args) !== false ? null : '';
-      }catch(error){
-        if (error instanceof chai.AssertionError) return `${error}`;
-        throw error;
-      }
-    };
+  const expectStrategy = (
+    patternIsAFunction ? (...args) => {
+      const result = pattern(...args);
+      if (result === false) throw new AssertionError(`matcher returned false`);
+      if (result === true || result === undefined) return;
+      throw new Error(`pattern function returned something weird: ${inspect(result)}`);
+    } :
+    _.isString(pattern) ? target => {
+      expect(target).to.equal(pattern);
+    } :
+    _.isRegExp(pattern) ? target => {
+      expect(target).to.be.a('string');
+      expect(target).to.match(pattern);
+    } :
+    target => {
+      expect(target).to.be.a(Array.isArray(pattern) ? 'array' : typeof pattern);
+      expect(target).to.matchPattern(pattern);
+    }
+  );
 
-    isMethod = patternTakesOptions
-      ? (...args) => {
-        isMethod = target => aMethod(target, ...args) === null;
-        isMethod.toString = () => `${isName}(${args.map(inspect).join(', ')})`;
-        return isMethod;
-      }
-      : target => aMethod(target) === null
-    ;
-  }else{
-    aMethod = target => {
-      if (_.isPlainObject(pattern) && !_.isPlainObject(target)) return false;
-      return matchPattern(target, normalizePatternFunction(pattern));
-    };
-    isMethod = target => aMethod(target) === null;
-  }
+  const expectMethod = (target, ...args) => {
+    try{
+      expectStrategy(target, ...args);
+    }catch(error){
+      if (!(error instanceof AssertionError)) throw error;
+      throw new AssertionError(
+        (
+          `${inspect(target)} didn't match target ${isMethod.patternName}` +
+          (patternTakesOptions ? `(${inspectArgs(args)})` : '') +
+          `: error=${error}`
+        ),
+        {pattern, parentError: error},
+      );
+    }
+  };
 
+  const matchesPattern = (target, ...args) =>
+    catchAssertionErrors(() => {
+      expectMethod(target, ...args);
+      return true;
+    });
+
+  const isMethod = patternTakesOptions
+    ? (...args) => {
+      const dynamicIsMethod = target => matchesPattern(target, ...args);
+      dynamicIsMethod.toString = () => `${isMethod.isName}(${inspectArgs(args)})`;
+      return dynamicIsMethod;
+    }
+    : target => matchesPattern(target);
+
+  isMethod.patternName = `${patternIsAFunction ? pattern : inspect(pattern) }`;
+  isMethod.isName = `is${isMethod.patternName}`;
   isMethod.pattern = pattern;
+  isMethod.expect = expectMethod;
+  return isMethod;
+};
+
+
+const definePattern = (patternName, pattern) => {
+  if (typeof patternName !== 'string' || !patternName) throw new Error('patternName is required');
+  if (typeof pattern === 'undefined') throw new Error('pattern is required');
+  const isName = definePattern.isName(patternName);
+  if (isName in _) throw new Error(`_.${isName} already exists!`);
+  if (patternName in chai.Assertion.prototype) throw new Error(`chai.Assertion.${patternName} already exists!`);
+
+  const isMethod = createPattern(pattern);
+  isMethod.patternName = patternName;
+  isMethod.isName = isName;
   isMethod.toString = () => `${isName}()`;
 
   _.mixin({ [isName]: isMethod });
 
-  chai.Assertion.addMethod(aName, function(...args){
-    const check = aMethod(this._obj, ...args);
-    const error = typeof check === 'string' ? `: ${check}` : '';
+  const expectMethod = isMethod.expect;
+  chai.Assertion.addMethod(patternName, function(...args){
+    let error;
+    try{
+      expectMethod(this._obj, ...args);
+    }catch(e){
+      error = e.parentError || e;
+    }
+    const matchMessage = `match pattern ${patternName}(${inspectArgs(args)})${error ? `: ${error}` : ''}`;
     this.assert(
-      check === null,
-      `expected #{this} to match pattern ${aName}${error}`,
-      `expected #{this} to not match pattern ${aName}${error}`,
+      !error,
+      `expected #{this} to ${matchMessage}`,
+      `expected #{this} to not ${matchMessage}`,
       this._obj,
     );
   });
-
 };
 
 const capitalize = string => string[0].toUpperCase() + string.substr(1);
@@ -186,6 +222,7 @@ module.exports = {
   expect,
   _,
   matchPattern,
+  createPattern,
   definePattern,
   inspect,
 };

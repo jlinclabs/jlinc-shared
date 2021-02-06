@@ -9,15 +9,17 @@ definePattern('aURL',
 definePattern('aDID', /^did:jlinc:.+$/);
 
 definePattern('aJsonStringMatching', (json, pattern) => {
-  let object;
-  try{ object = JSON.parse(json); }catch(e){ return false; };
-  expect(object).to.matchPattern(pattern);
+  expect(json).to.be.JSON();
+  expect(JSON.parse(json)).to.matchPattern(pattern);
 });
 
 definePattern('JSON', json => {
   expect(json).to.be.a('string');
-  try{ JSON.parse(json); return true; }
-  catch(e){ return false; }
+  try{
+    JSON.parse(json);
+  }catch(error){
+    throw new chai.AssertionError(`invalid JSON "${json}"`, { json }, error);
+  }
 });
 
 definePattern('includedIn', (target, set) =>

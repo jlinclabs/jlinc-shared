@@ -37,7 +37,12 @@ describe('matchers/core', function(){
       [
         _.isString,
         ['""', '"hello"'],
-        ['nope'],
+        ['nope', '[]', 'false'],
+      ],
+      [
+        _.isArray,
+        ['[1,2]', '["hello"]'],
+        ['{nope: 43}'],
       ],
     ]
   );
