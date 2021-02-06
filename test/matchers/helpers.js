@@ -1,5 +1,6 @@
 'use strict';
 
+const Path = require('path');
 const util = require('util');
 const chai = require('chai');
 const AssertionError = require('assertion-error');
@@ -35,20 +36,6 @@ const inspect = object =>
     .replace(/\[Function: is(.+?)\]/g, (s, m) => `is${m}` in _ ? `_.is${m}` : s);
 
 Object.entries({
-  matchesPattern(pattern){
-    if (typeof pattern === 'undefined')
-      throw new Error('_.matchesPattern given undefined');
-    if (_.isRegExp(pattern))
-      return target => _.isString(target) && pattern.test(target);
-
-    if (_.isFunction(pattern))
-      return target => catchAssertionErrors(() => pattern(target) !== false);
-
-    return target =>
-      typeof pattern === typeof target &&
-      matchPattern(target, pattern) === null
-    ;
-  },
   isEvery(...patterns){
     if (
       patterns.length === 0 ||
@@ -76,7 +63,29 @@ Object.entries({
   });
 });
 
+const REPO_ROOT = Path.resolve(__dirname, '../..');
+const getSpecCaller = () =>
+  (new Error).stack.split('\n')
+    .find(l => l.match(/(\/.+\.spec\.js:\d+)/))
+      ? Path.relative(REPO_ROOT, RegExp.$1)
+      : '[unknown file]'
+;
+
 _.mixin({
+  matchesPattern(pattern){
+    if (typeof pattern === 'undefined')
+      throw new Error('_.matchesPattern given undefined');
+
+    const isMethod = (
+      _.isFunction(pattern) ? target => catchAssertionErrors(() => pattern(target) !== false) :
+      _.isRegExp(pattern) ? target => _.isString(target) && pattern.test(target) :
+      target => typeof pattern === typeof target && matchPattern(target, pattern) === null
+    );
+
+    const sourceLine = getSpecCaller();
+    isMethod.toString = () => `(${sourceLine})`;
+    return isMethod;
+  },
   isOneOf: _.isSome,
   isAll: _.isEvery,
   isUndefinedOr(pattern){

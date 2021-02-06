@@ -1,5 +1,6 @@
 'use strict';
 
+const util = require('util');
 const { chai, expect, _, createPattern, definePattern } = require('./helpers');
 
 const UUID_REGEXP = /^[\w-_]+\.[\w-_]+\.[\w-_]*$/;
@@ -87,6 +88,67 @@ describe('test/matchers/helpers', function(){
         it('it should throw that error', function() {
           const isFire = _.matchesPattern(() => { throw new Error('fire!'); });
           expect(() => { isFire(); }).to.throw(Error, 'fire!');
+        });
+      });
+
+      context('when used in a grater pattern', function(){
+        it('it should error good', function() {
+
+          const isId = _.matchesPattern(/^id-\d{3}$/);
+          expect(isId.toString()).to.equal('(test/matchers/helpers.spec.js:97)');
+
+          expect(() => {
+            expect({id: '37'}).to.matchPattern({id: isId});
+          }).to.throw(
+            chai.AssertionError,
+            `{id: '37'} didn't match target {id: '${isId}'}`
+          );
+
+          const isName = _.matchesPattern(target =>
+            _.isString(target) && /^\w+ \w+/.test(target)
+          );
+          expect(isName.toString()).to.equal('(test/matchers/helpers.spec.js:107)');
+
+          expect(() => {
+            expect({name: 'Larry'}).to.matchPattern({name: isName});
+          }).to.throw(
+            chai.AssertionError,
+            `{name: 'Larry'} didn't match target {name: '${isName}'}`
+          );
+
+          const isPerson = _.matchesPattern(target => {
+            expect(target).to.be.a('object');
+            expect(target).to.matchPattern({
+              id: isId,
+              name: isName,
+            });
+          });
+          expect(isPerson.toString()).to.equal('(test/matchers/helpers.spec.js:119)');
+
+          // good
+          ;[
+            {name: 'Jared Atron', id: 'id-666'},
+          ].forEach(goodPerson => {
+            expect(isPerson(goodPerson)).to.be.true;
+            expect(goodPerson).to.matchPattern(isPerson);
+            expect({steve: goodPerson}).to.matchPattern({steve: isPerson});
+          });
+
+          // bad
+          ;[
+            {name: 'Jared', id: 'id-666'},
+            {name: 'Steve Atron', id: '88'},
+          ].forEach(badPerson => {
+            expect(isPerson(badPerson)).to.be.false;
+            expect(badPerson).to.not.matchPattern(isPerson);
+            expect({steve: badPerson}).to.not.matchPattern({steve: isPerson});
+            expect(() => {
+              expect({steve: badPerson}).to.matchPattern({steve: isPerson});
+            }).to.throw(
+              chai.AssertionError,
+              `{steve: ${util.inspect(badPerson)}} didn't match target {steve: '${isPerson}'}`
+            );
+          });
         });
       });
     });
@@ -199,8 +261,8 @@ describe('test/matchers/helpers', function(){
     });
   });
 
-  it('matchesPattern, isEvery and isSome should define toString on returned functions', function(){
-    ['matchesPattern', 'isEvery', 'isSome'].forEach(helper => {
+  it('isEvery and isSome should define toString on returned functions', function(){
+    ['isEvery', 'isSome'].forEach(helper => {
       const isString = _[helper](_.isString);
       expect(isString+'').to.equal(`${helper}(_.isString)`);
 
