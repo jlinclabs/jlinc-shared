@@ -22,9 +22,48 @@ definePattern(
 );
 
 definePattern(
-  'anOrganizationAdminMembership',
+  'anAcceptedOrganizationMembership',
   target => {
     expect(target).to.be.anOrganizationMembership();
+    expect(target).to.matchPattern({
+      acceptedAt: _.isISODateString,
+      rejectedAt: undefined,
+      '...': 1
+    });
+  }
+);
+
+definePattern(
+  'aRejectedOrganizationMembership',
+  target => {
+    expect(target).to.be.anOrganizationMembership();
+    expect(target).to.matchPattern({
+      resolvedByUserDid: _.isDID,
+      acceptedAt: undefined,
+      rejectedAt: _.isISODateString,
+      updatedAt: _.isISODateString,
+      '...': 1
+    });
+  }
+);
+
+definePattern(
+  'aPendingOrganizationMembership',
+  target => {
+    expect(target).to.be.anOrganizationMembership();
+    expect(target).to.matchPattern({
+      resolvedByUserDid: undefined,
+      acceptedAt: undefined,
+      rejectedAt: undefined,
+      '...': 1
+    });
+  }
+);
+
+definePattern(
+  'anOrganizationAdminMembership',
+  target => {
+    expect(target).to.be.anAcceptedOrganizationMembership();
     expect(target).to.matchPattern({ admin: true, '...': 1 });
   }
 );
@@ -32,7 +71,7 @@ definePattern(
 definePattern(
   'anOrganizationCuratorMembership',
   target => {
-    expect(target).to.be.anOrganizationMembership();
+    expect(target).to.be.anAcceptedOrganizationMembership();
     expect(target).to.matchPattern({ curator: true, '...': 1 });
   }
 );
@@ -65,3 +104,39 @@ definePattern(
     });
   }
 );
+
+definePattern(
+  'aPendingOrganizationMembershipInviteBetween',
+  (target, { organizationApikey, memberUserDid }) => {
+    expect(target).to.be.aPendingOrganizationMembership();
+    expect(target).to.be.anOrganizationMembershipBetween({
+      organizationApikey, memberUserDid,
+    });
+    expect(target.memberUserDid).to.equal(memberUserDid);
+    expect(target.createdByUserDid).to.not.equal(memberUserDid);
+  }
+);
+
+definePattern(
+  'aPendingOrganizationMembershipRequestBetween',
+  (target, { organizationApikey, memberUserDid }) => {
+    expect(target).to.be.aPendingOrganizationMembership();
+    expect(target).to.be.anOrganizationMembershipBetween({
+      organizationApikey, memberUserDid,
+    });
+    expect(target.memberUserDid).to.equal(memberUserDid);
+    expect(target.createdByUserDid).to.equal(memberUserDid);
+  }
+);
+
+definePattern(
+  'anAcceptedOrganizationMembershipBetween',
+  (target, { organizationApikey, memberUserDid }) => {
+    expect(target).to.be.anAcceptedOrganizationMembership();
+    expect(target).to.be.anOrganizationMembershipBetween({
+      organizationApikey, memberUserDid,
+    });
+  }
+);
+
+
