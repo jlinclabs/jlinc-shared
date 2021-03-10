@@ -11,9 +11,13 @@ definePattern(
     createdAt: _.isISODateString,
     organizationApikey: _.isOrganizationApikey,
     memberUserDid: _.isDID,
+    createdByUserDid: _.isDID,
     admin: _.isUndefinedOr(_.isBoolean),
     curator: _.isUndefinedOr(_.isBoolean),
     updatedAt: _.isUndefinedOr(_.isISODateString),
+    acceptedAt: _.isUndefinedOr(_.isISODateString),
+    rejectedAt: _.isUndefinedOr(_.isISODateString),
+    resolvedByUserDid: _.isUndefinedOr(_.isDID),
   }
 );
 

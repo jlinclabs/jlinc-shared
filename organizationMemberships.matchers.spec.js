@@ -10,7 +10,9 @@ describe('organizationMemberships.matchers', function(){
     createdAt: '2020-12-09T20:04:13.320Z',
     organizationApikey: 'WagonCorp',
     memberUserDid: 'did:jlinc:XdsNStmHbQzSfaUx8f7r8BG-oJAnaXhoQeDApBJOrXs',
+    createdByUserDid: 'did:jlinc:XdsNStmHbQzSfaUx8f7r8BG-oJAnaXhoQeDApBJOrXs',
     updatedAt: '2020-12-09T20:04:13.320Z',
+    acceptedAt: '2020-12-09T20:04:13.320Z',
     admin: true,
   };
 
