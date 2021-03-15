@@ -1,10 +1,13 @@
 'use strict';
 
-const fs = require('fs');
 const Path = require('path');
+const readDirRecursive = require('fs-readdir-recursive');
 
 it('each file should have a spec', function() {
-  const files = fs.readdirSync(Path.resolve(__dirname, '..'));
+  const files = readDirRecursive(
+    Path.resolve(__dirname, '..'),
+    name => !name.match(/^(\.|node_modules$|test$)/),
+  );
   const specs = [];
   const specables = [];
   files.forEach(file => {
