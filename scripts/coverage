@@ -6,6 +6,7 @@ set -x
 nyc \
   --include=**/*.js \
   --exclude=**/*.spec.js \
+  --exclude=test/*.js \
   --reporter=text \
   --check-coverage \
   --lines 90 \
