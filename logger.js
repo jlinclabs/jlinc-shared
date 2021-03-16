@@ -9,8 +9,7 @@ const logger = new winston.Logger;
 logger.exitOnError = false;
 logger.level = process.env.LOG_LEVEL || 'debug';
 
-const ROOT_PATH = (require.main && require.main.path) || process.cwd();
-const LOGS_PATH = path.resolve(ROOT_PATH, `logs`);
+const LOGS_PATH = path.resolve(require('./projectRootPath'), `logs`);
 
 const LOG_TO_CONSOLE = 'LOG_TO_CONSOLE' in process.env
   ? process.env.LOG_TO_CONSOLE !== '0' && process.env.LOG_TO_CONSOLE !== 'false'

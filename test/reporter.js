@@ -6,7 +6,7 @@ const inherits = require('util').inherits;
 const { Base, Spec } = require('mocha').reporters;
 
 const { color } = Base;
-const ROOT = Path.resolve(__dirname, '..');
+const projectRootPath = require('../projectRootPath');
 
 const Reporter = function(runner) {
   Spec.call(this, runner);
@@ -48,7 +48,7 @@ function extractPathsFromFailures(failures){
     let lineNumber;
     test.err.stack.split(/\n/).forEach(line => {
       if (specPath && lineNumber) return;
-      if (line.indexOf(ROOT) === -1) return;
+      if (line.indexOf(projectRootPath) === -1) return;
       const matches = line.match(/\((\/.+?.spec.js)(:(\d+))?(:\d+)?\)/);
       if (!matches) return;
       specPath = matches[1];
@@ -60,7 +60,7 @@ function extractPathsFromFailures(failures){
       console.error(test.err);
       return;
     }
-    const relativePath = Path.relative(ROOT, specPath);
+    const relativePath = Path.relative(projectRootPath, specPath);
     paths[relativePath] = lineNumber ? `${relativePath}:${lineNumber}` : relativePath;
   });
   return paths;
