@@ -365,6 +365,11 @@ describe('feedPosts', function(){
         expectError('posterUserDid is required');
         options.posterUserDid = 'did:jlinc:whatever';
         expectError('one of post.title or post.body is required');
+        options.title = '';
+        expectError('one of post.title or post.body is required');
+        delete options.title;
+        options.body = '';
+        expectError('one of post.title or post.body is required');
         options.title = 'x';
         expectNoError();
         delete options.title;
