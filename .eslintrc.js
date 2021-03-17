@@ -3,11 +3,13 @@ module.exports = {
     "browser": false,
     "es6": true,
     "mocha": true,
+    "node": true,
   },
   "globals": {
     "expect": true,
     "console": true,
     "process": true,
+    "_": true,
   },
   "parserOptions": {
     "ecmaVersion": 2018,
