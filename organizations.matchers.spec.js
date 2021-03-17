@@ -5,9 +5,16 @@ const {
   notObjects,
   notStrings,
 } = require('./test/helpers');
+
 require('./organizations.matchers');
+const assetsMatchers = require('./assets.matchers');
+const ASSETS_SERVER_URL =  'https://fake-assets.server:2102';
 
 describe('organizations.matchers', function(){
+
+  beforeEach(function(){
+    assetsMatchers.ASSETS_SERVER_URL = ASSETS_SERVER_URL;
+  });
 
   testPatternWithoutOptions(
     'anOrganizationApikey',
@@ -157,8 +164,8 @@ describe('organizations.matchers', function(){
         apikey: 'datayogi',
         signing_public_key: 'MV1o6cjP_ySeTmJHZe2fmrBgNmgGLDT1YzvDsYzQi-U',
         encrypting_public_key: 'ZvoF4Y_7blHIhBo5J_XTwUTUM04ec91c8fG8GNhBN34',
-        consumer_icon: 'http://fake-assets.test:8081/7b1c3d10-04fc-11eb-8ab4-579738423e97.png',
-        consumer_banner: 'http://fake-assets.test:8081/7661e950-04fc-11eb-8ab4-579738423e97.png',
+        consumer_icon: `${ASSETS_SERVER_URL}/7b1c3d10-04fc-11eb-8ab4-579738423e97.png`,
+        consumer_banner: `${ASSETS_SERVER_URL}/7661e950-04fc-11eb-8ab4-579738423e97.png`,
         name: 'datayogi',
         legal_name: 'datayogi',
         ein: null,
