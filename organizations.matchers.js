@@ -32,7 +32,6 @@ definePattern('organizationConcents',
 
 definePattern('organizationRequestedData', target => {
   expect(target).to.be.aPlainObject();
-  if (!_.isPlainObject(target)) return false;
   for (let key in target) {
     if (
       (!PERSONAL_DATA_KEYS.includes(key) && !key.match(/^_.+$/)) ||
