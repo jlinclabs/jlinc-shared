@@ -3,7 +3,7 @@
 const sodium = require('sodium').api;
 const b64 = require('urlsafe-base64');
 
-const { chai, expect, definePattern } = require('./test/matchers');
+const { expect, definePattern } = require('./test/matchers');
 
 definePattern('aPublicKey', /.+/);
 
@@ -16,19 +16,18 @@ definePattern('aCryptoSignKeypair', (keys) => {
   });
   const { publicKey, privateKey } = keys;
   const itemToSign = `${Math.random()} is my favorite number`;
+  let decoded;
   try{
-    expect(
-      sodium.crypto_sign_open(
-        sodium.crypto_sign(
-          Buffer.from(itemToSign, 'utf8'),
-          b64.decode(privateKey),
-        ),
-        b64.decode(publicKey)
-      ).toString()
-    ).to.equal(itemToSign);
+    decoded = sodium.crypto_sign_open(
+      sodium.crypto_sign(
+        Buffer.from(itemToSign, 'utf8'),
+        b64.decode(privateKey),
+      ),
+      b64.decode(publicKey)
+    ).toString();
   }catch(error){
-    if (error instanceof chai.AssertionError) throw error;
-    expect.fail(true, false, `linsodium error: ${error}`);
+    expect.fail(true, false, `libsodium error: ${error}`);
   }
+  expect(decoded).to.equal(itemToSign);
 });
 
