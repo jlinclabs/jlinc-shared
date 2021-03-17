@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+exec find . | grep -vE '(node_modules|^\./\.)' | grep -E '\.spec\.js$'

@@ -2,3 +2,4 @@ node_modules
 .eslintcache
 coverage
 .nyc_output
+test-results

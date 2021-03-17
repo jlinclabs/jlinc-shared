@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+set -e
+set -x
+
+PATH=./node_modules/.bin/:$PATH
+
+mkdir -p ./test-results
+
+./scripts/lint \
+  --format junit \
+  --output-file ./test-results/eslint.xml
+
+set +e
+nyc \
+  --check-coverage \
+  --silent \
+  --cache \
+  --cache-dir=./tmp/nyc-cache \
+  mocha \
+  --forbid-only \
+  --reporter mocha-junit-reporter \
+  --reporter-options mochaFile=test-results/mocha.xml \
+  $(./scripts/find-specs)
+
+EXIT_STATUS=$?
+set -e
+echo "nyc mocha exited with $EXIT_STATUS"
+
+nyc report --reporter=text-lcov > ./test-results/lcov.info
+nyc report --reporter=html --report-dir=./test-results/coverage
+(
+  cd ./test-results
+  tar -zcvf ./coverage.tar.gz ./coverage
+  rm -rf ./coverage
+)
+
+exit $EXIT_STATUS

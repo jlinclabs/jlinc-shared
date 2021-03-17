@@ -1,6 +1,0 @@
---full-trace
---exit
---reporter test/reporter.js
---colors
---recursive
---require ./test/setup.js

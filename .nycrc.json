@@ -1,0 +1,12 @@
+{
+  "include": [
+    "**/*.js"
+  ],
+  "exclude": [
+    ".*",
+    "**/*.spec.js",
+    "test/*.js"
+  ],
+  "lines": 90,
+  "per-file": true
+}

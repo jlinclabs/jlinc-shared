@@ -6,7 +6,7 @@ const readDirRecursive = require('fs-readdir-recursive');
 it('each file should have a spec', function() {
   const files = readDirRecursive(
     Path.resolve(__dirname, '..'),
-    name => !name.match(/^(\.|node_modules$|test$)/),
+    name => !name.match(/^(\.|tmp|node_modules$|test$|test-results$)/),
   );
   const specs = [];
   const specables = [];

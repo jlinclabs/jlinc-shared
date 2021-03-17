@@ -1,8 +1,17 @@
 #!/usr/bin/env bash
 
 set -e
-set -x
+# set -x
+
+PATH=./node_modules/.bin/:$PATH
 
 ./scripts/lint
-./scripts/coverage ./scripts/mocha $@
 
+nyc \
+  --reporter=html \
+  --report-dir=./tmp/coverage \
+  --reporter=text \
+  mocha $@ $(./scripts/find-specs)
+
+echo "To view the detailed coverage report run:"
+echo "(cd ./tmp/coverage && http-server)"

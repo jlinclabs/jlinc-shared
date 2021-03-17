@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
 eslint --cache --format codeframe $@ \
-  $(find . | grep -v node_modules | grep -v /coverage | grep '.js$' | grep -v '.eslintrc.js') \
+  $(find . | grep -vE '^\./(node_modules|coverage|eslintrc|tmp|\.)' | grep -E '\.js$') \
   $(grep -ril '^#!/usr/bin/env node' ./scripts)

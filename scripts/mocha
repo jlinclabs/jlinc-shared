@@ -3,5 +3,5 @@
 set -e
 set -x
 
-mocha $@ `find . | grep -E '\.spec\.js$'`
+./node_modules/.bin/mocha $@ $(./scripts/find-specs)
 

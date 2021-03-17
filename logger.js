@@ -11,6 +11,7 @@ logger.level = process.env.LOG_LEVEL || 'debug';
 
 const LOGS_PATH = path.resolve(require('./projectRootPath'), `logs`);
 
+/* istanbul ignore next */
 const LOG_TO_CONSOLE = 'LOG_TO_CONSOLE' in process.env
   ? process.env.LOG_TO_CONSOLE !== '0' && process.env.LOG_TO_CONSOLE !== 'false'
   : process.env.NODE_ENV === 'development'
@@ -19,6 +20,7 @@ const LOG_TO_CONSOLE = 'LOG_TO_CONSOLE' in process.env
 const inspect = object =>
   util.inspect(object, { showHidden: true, depth: null });
 
+/* istanbul ignore if */
 if (LOG_TO_CONSOLE){
   logger.add(winston.transports.Console, {
     level: logger.level,
@@ -31,6 +33,7 @@ if (LOG_TO_CONSOLE){
   });
 }
 
+/* istanbul ignore if */
 if (process.env.NODE_ENV === 'production'){
   logger.add(winston.transports.File, {
     level: logger.level,
@@ -44,6 +47,7 @@ if (process.env.NODE_ENV === 'production'){
   });
 }
 
+/* istanbul ignore if */
 if (process.env.NODE_ENV === 'test'){
   logger.add(winston.transports.File, {
     level: logger.level,
