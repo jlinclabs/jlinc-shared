@@ -8,15 +8,15 @@ definePattern(
   'anOrganizationMembership',
   {
     uid: _.isUID,
-    createdAt: _.isISODateString,
+    createdAt: _.isDateOrAnISODateString,
     organizationApikey: _.isOrganizationApikey,
     memberUserDid: _.isDID,
     createdByUserDid: _.isDID,
     admin: _.isUndefinedOr(_.isBoolean),
     curator: _.isUndefinedOr(_.isBoolean),
-    updatedAt: _.isUndefinedOr(_.isISODateString),
-    acceptedAt: _.isUndefinedOr(_.isISODateString),
-    rejectedAt: _.isUndefinedOr(_.isISODateString),
+    updatedAt: _.isUndefinedOr(_.isDateOrAnISODateString),
+    acceptedAt: _.isUndefinedOr(_.isDateOrAnISODateString),
+    rejectedAt: _.isUndefinedOr(_.isDateOrAnISODateString),
     resolvedByUserDid: _.isUndefinedOr(_.isDID),
   }
 );
@@ -26,7 +26,7 @@ definePattern(
   target => {
     expect(target).to.be.anOrganizationMembership();
     expect(target).to.matchPattern({
-      acceptedAt: _.isISODateString,
+      acceptedAt: _.isDateOrAnISODateString,
       rejectedAt: undefined,
       '...': 1
     });
@@ -40,8 +40,8 @@ definePattern(
     expect(target).to.matchPattern({
       resolvedByUserDid: _.isDID,
       acceptedAt: undefined,
-      rejectedAt: _.isISODateString,
-      updatedAt: _.isISODateString,
+      rejectedAt: _.isDateOrAnISODateString,
+      updatedAt: _.isDateOrAnISODateString,
       '...': 1
     });
   }

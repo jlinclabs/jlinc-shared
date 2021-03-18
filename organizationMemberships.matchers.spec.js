@@ -43,7 +43,7 @@ describe('organizationMemberships.matchers', function(){
     expect(failingCase).to.not.be.anAcceptedOrganizationMembership();
     expect(() =>
       expect(failingCase).to.be.anAcceptedOrganizationMembership()
-    ).to.throw(`{acceptedAt: undefined} didn't match target {acceptedAt: 'isISODateString()'}`);
+    ).to.throw(`{acceptedAt: undefined} didn't match target {acceptedAt: 'isDateOrAnISODateString()'}`);
   });
   it('aRejectedOrganizationMembership', function() {
     expect({
@@ -223,6 +223,6 @@ describe('organizationMemberships.matchers', function(){
         organizationApikey: 'WagonCorp',
         memberUserDid: 'did:jlinc:XdsNStmHbQzSfaUx8f7r8BG-oJAnaXhoQeDApBJOrXs',
       })
-    ).to.throw(`{acceptedAt: undefined} didn't match target {acceptedAt: 'isISODateString()'}`);
+    ).to.throw(`{acceptedAt: undefined} didn't match target {acceptedAt: 'isDateOrAnISODateString()'}`);
   });
 });
