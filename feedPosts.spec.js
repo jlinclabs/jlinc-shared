@@ -75,6 +75,7 @@ describe('feedPosts', function(){
       initFeedUserDid: 'did:jlinc:somefinepersonspublicprofiledid',
       initPosterUserDid: 'did:jlinc:somefinepersonspublicprofiledid',
       createdAt: _.isDate,
+      contentCreatedAt: _.isDate,
       initCreatedAt: userPublishedRootPost.createdAt,
       ancestors: [],
     });
@@ -109,6 +110,7 @@ describe('feedPosts', function(){
       initPosterUserDid: 'did:jlinc:somefinepersonspublicprofiledid',
       initFeedOrganizationApikey: 'halliburton',
       createdAt: _.isDate,
+      contentCreatedAt: _.isDate,
       initCreatedAt: organizationFormRootPostAsUser.createdAt,
       ancestors: [],
     });
@@ -144,6 +146,7 @@ describe('feedPosts', function(){
       initPosterOrganizationApikey: 'halliburton',
       initFeedOrganizationApikey: 'halliburton',
       createdAt: _.isDate,
+      contentCreatedAt: _.isDate,
       initCreatedAt: organizationFormRootPostAsOrg.createdAt,
       ancestors: [],
     });
@@ -191,6 +194,7 @@ describe('feedPosts', function(){
       parentUid: organizationFormRootPostAsUser.uid,
       ancestors: [organizationFormRootPostAsUser.uid],
       createdAt: _.isDate,
+      contentCreatedAt: _.isDate,
       uid: _.isFeedPostUid,
       visibleTo: 2,
       maxVisibleTo: 2,
@@ -238,6 +242,7 @@ describe('feedPosts', function(){
         organizationFormRootPostAsUser.uid,
       ],
       createdAt: _.isDate,
+      contentCreatedAt: _.isDate,
       uid: _.isFeedPostUid,
       feedUserDid: 'did:jlinc:harrythefabelguy',
       posterUserDid: 'did:jlinc:harrythefabelguy',
@@ -277,6 +282,7 @@ describe('feedPosts', function(){
         organizationFormRootPostAsUser.uid,
       ],
       createdAt: _.isDate,
+      contentCreatedAt: _.isDate,
       uid: _.isFeedPostUid,
       feedOrganizationApikey: 'exon',
       posterUserDid: 'did:jlinc:somewickedpersonspublicprofiledid',
@@ -313,6 +319,7 @@ describe('feedPosts', function(){
         organizationFormRootPostAsUser.uid,
       ],
       createdAt: _.isDate,
+      contentCreatedAt: _.isDate,
       visibleTo: 0,
       maxVisibleTo: 2,
       uid: _.isFeedPostUid,
@@ -339,6 +346,10 @@ describe('feedPosts', function(){
         records.feed_post.ancestors = JSON.parse(records.feed_post.ancestors);
       const copyOfPost = recordToFeedPost({
         ...records.feed_post_content,
+        content_created_at: (
+          records.feed_post_content &&
+          records.feed_post_content.created_at
+        ),
         ...records.feed_post,
       });
       expect(
@@ -778,6 +789,7 @@ describe('feedPosts', function(){
       it('should return a feed_posts record and a feed_post_contents records', function() {
         expect(feedPostToRecords(post)).to.matchPattern({
           feed_post_content: {
+            created_at: post.contentCreatedAt,
             uid: post.feedPostContentUid,
             title: 'hail to the king baby',
             body: '<h1>YEAH!</h1>',
@@ -825,6 +837,7 @@ describe('feedPosts', function(){
       it('should return a feed_posts record', function() {
         expect(feedPostToRecords(post)).to.matchPattern({
           feed_post_content: {
+            created_at: post.contentCreatedAt,
             uid: post.feedPostContentUid,
             title: 'i fight cats',
             body: '<h1>call 1-800-ifightcats</h1>',
@@ -897,6 +910,7 @@ describe('feedPosts', function(){
             last_published_at: parent.createdAt,
           },
           feed_post_content: {
+            created_at: post.contentCreatedAt,
             uid: post.feedPostContentUid,
             title: post.title,
             body: post.body,
@@ -951,6 +965,7 @@ describe('feedPosts', function(){
             last_publishing_user_did: undefined,
           },
           feed_post_content: {
+            created_at: post.contentCreatedAt,
             uid: post.feedPostContentUid,
             title: post.title,
             body: post.body,
@@ -1004,6 +1019,7 @@ describe('feedPosts', function(){
             last_publishing_user_did: undefined,
           },
           feed_post_content: {
+            created_at: post.contentCreatedAt,
             uid: post.feedPostContentUid,
             title: post.title,
             body: post.body,
@@ -1060,6 +1076,7 @@ describe('feedPosts', function(){
             last_publishing_user_did: 'did:jlinc:anadminsoniceheadminedtwice',
           },
           feed_post_content: {
+            created_at: post.contentCreatedAt,
             uid: post.feedPostContentUid,
             title: post.title,
             body: post.body,
@@ -1126,11 +1143,9 @@ describe('feedPosts', function(){
         })
       ).to.deep.equal({
         uid: 'FAKE_uid',
-        title: undefined,
         body: 'FAKE_body',
         maxVisibleTo: 2,
         initPosterUserDid: 'FAKE_init_poster_user_did',
-        initPosterOrganizationApikey: undefined,
         initFeedOrganizationApikey: 'FAKE_init_feed_organization_apikey',
         initFeedUserDid: 'FAKE_init_feed_user_did',
         initCreatedAt: 'FAKE_init_created_at',

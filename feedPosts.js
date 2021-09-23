@@ -49,7 +49,8 @@ function _createRootFeedPost({posterUserDid, maxVisibleTo, title, body}){
     feedPostContentUid: uid,
     initUid: uid,
     initPosterUserDid: posterUserDid,
-    createdAt: new Date,
+    createdAt: createdAt,
+    contentCreatedAt: createdAt,
     posterUserDid,
     title,
     body,
@@ -116,6 +117,7 @@ function editFeedPost({
   _assertValidTitleAndBody({title, body});
   _assertValidVisibleTo(maxVisibleTo, 'maxVisibleTo');
   const visibleTo = post.feedUserDid ? maxVisibleTo : post.visibleTo;
+  const now = new Date;
   return {
     ...post,
     feedPostContentUid: createFeedPostUid(),
@@ -123,7 +125,8 @@ function editFeedPost({
     body,
     visibleTo,
     maxVisibleTo,
-    updatedAt: new Date,
+    updatedAt: now,
+    contentCreatedAt: now,
   };
 }
 
@@ -153,6 +156,7 @@ function _descendFromFeedPost(parent, visibleTo){
 
   const post = {
     ..._.pick(parent, [
+      'contentCreatedAt',
       'initUid',
       'initCreatedAt',
       'initPosterUserDid',
@@ -278,6 +282,7 @@ function feedPostToRecords(feedPost){
     feed_post_content: {
       ...extractPropsAsColumns(FEED_POST_CONTENT_COLUMN_TO_PROP),
       uid: feedPost.feedPostContentUid,
+      created_at: feedPost.contentCreatedAt,
     },
   };
 }
@@ -307,6 +312,7 @@ const FEED_POST_COLUMN_TO_PROP = Object.freeze({
 });
 
 const FEED_POST_CONTENT_COLUMN_TO_PROP = Object.freeze({
+  created_at: 'createdAt',
   uid: 'uid',
   title: 'title',
   body: 'body',
@@ -322,8 +328,7 @@ function recordToInstance(map, record){
   return Object.entries(map).reduce(
     (post, [column, prop]) => {
       let value = record[column];
-      if (value === false || value === null) value = undefined;
-      post[prop] = value;
+      if (typeof value !== 'undefined' && value !== false && value !== null) post[prop] = value;
       return post;
     },
     {}
@@ -340,6 +345,7 @@ function recordToFeedPost(record){
     recordToFeedPostContent({
       ...record,
       uid: record.feed_post_content_uid,
+      created_at: record.content_created_at,
     }),
   );
 }
@@ -361,6 +367,8 @@ function addContentsToFeedPost(post, contents){
     });
     return p;
   })();
+
+  if (contents.createdAt) post.contentCreatedAt = contents.createdAt;
 
   const isForumPost = !!(post.feedOrganizationApikey && post.visibleTo === 0);
   ['commentCount', 'upvoteCount', 'downvoteCount', 'myVote'].forEach(prop => {

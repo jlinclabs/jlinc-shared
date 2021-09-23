@@ -24,6 +24,7 @@ definePattern('aFeedPost', post => {
     initFeedOrganizationApikey: _.isUndefinedOr(_.isOrganizationApikey),
     initPosterOrganizationApikey: _.isUndefinedOr(_.isOrganizationApikey),
     createdAt: _.isDateOrAnISODateString,
+    contentCreatedAt: _.isDateOrAnISODateString,
     feedUserDid: _.isUndefinedOr(_.isDID),
     initFeedUserDid: _.isUndefinedOr(_.isDID),
     feedOrganizationApikey: _.isUndefinedOr(_.isOrganizationApikey),
