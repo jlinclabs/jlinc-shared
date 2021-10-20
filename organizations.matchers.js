@@ -115,4 +115,5 @@ definePattern('anOrganization', {
   signing_public_key: _.isString,
   encrypting_public_key: _.isString,
   short_description: _.isString,
+  forum_only_visible_to_members: _.isBoolean,
 });

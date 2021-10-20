@@ -211,6 +211,7 @@ describe('organizations.matchers', function(){
         prefered_contact_channel: null,
         orgs_subscribed_to_order: [],
         short_description: 'a test org',
+        forum_only_visible_to_members: false,
       }
     ],
     [
