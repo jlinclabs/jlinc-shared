@@ -3,7 +3,8 @@
 const { _, definePattern } = require('./test/matchers');
 require('./assets.matchers');
 
-const ORGANIZATION_TYPES_BY_PURPOSE = require('./organization_types_by_purpose');
+const ORGANIZATION_TYPES_LABELS = require('./organization_types_labels');
+const ORGANIZATION_PURPOSES_LABELS = require('./organization_purposes_labels');
 const CONSENTS_KEYS = require('./consents');
 const PERSONAL_DATA_KEYS = require('./personal_data_keys');
 const COMMUNICATION_CHANNEL_KEYS = require('./communication_channels');
@@ -11,13 +12,11 @@ const COMMUNICATION_CHANNEL_KEYS = require('./communication_channels');
 definePattern('anOrganizationApikey', /^[a-z][a-z0-9]{2,30}$/i);
 
 definePattern('anOrganizationPurpose',
-  _.isIncludedIn(Object.keys(ORGANIZATION_TYPES_BY_PURPOSE)),
+  _.isIncludedIn(Object.keys(ORGANIZATION_PURPOSES_LABELS)),
 );
 
 definePattern('anOrganizationType',
-  _.isIncludedIn(
-    _.flatten(Object.values(ORGANIZATION_TYPES_BY_PURPOSE))
-  ),
+  _.isIncludedIn(Object.keys(ORGANIZATION_TYPES_LABELS)),
 );
 
 definePattern('organizationConcents',

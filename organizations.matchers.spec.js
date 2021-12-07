@@ -59,9 +59,9 @@ describe('organizations.matchers', function(){
   testPatternWithoutOptions(
     'anOrganizationPurpose',
     [
-      'Personal',
-      'Topical',
-      'Organizational',
+      'personal_blog',
+      'public_group',
+      'organization',
     ],
     [
       '',
@@ -188,7 +188,7 @@ describe('organizations.matchers', function(){
         public: true,
         consumer_marketplace_tags: [],
         display_end_user_did: false,
-        purpose: 'Organizational',
+        purpose: 'organization',
         type: 'ngo',
         is_network: false,
         is_private: false,
