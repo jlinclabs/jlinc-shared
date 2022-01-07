@@ -33,6 +33,9 @@ definePattern('aFeedPost', post => {
     updatedAt: _.isUndefinedOr(_.isDateOrAnISODateString),
     deletedAt: _.isUndefinedOr(_.isDateOrAnISODateString),
     deletedByPoster: _.isUndefinedOr(_.isBoolean),
+    myVote: _.isUndefinedOr(_.isInteger),
+    upvoteCount: _.isUndefinedOr(_.isInteger),
+    downvoteCount: _.isUndefinedOr(_.isInteger),
     '...': 1,
   });
 
@@ -72,10 +75,24 @@ definePattern(
     expect(parentPost).to.be.aPublishedFeedPost();
     expect(consumerPost.uid).to.not.equal(parentPost.uid);
     expect(consumerPost).matchPattern({
-      ...parentPost,
+      feedPostContentUid: parentPost.feedPostContentUid,
+      initUid: parentPost.initUid,
+      initCreatedAt: parentPost.initCreatedAt,
+      initPosterUserDid: parentPost.initPosterUserDid,
+      initFeedOrganizationApikey: parentPost.initFeedOrganizationApikey,
+      initPosterOrganizationApikey: parentPost.initPosterOrganizationApikey,
+      contentCreatedAt: parentPost.contentCreatedAt,
+      feedUserDid: parentPost.feedUserDid,
+      initFeedUserDid: parentPost.initFeedUserDid,
+      title: parentPost.title,
+      body: parentPost.body,
+
       posterUserDid: undefined,
       uid: _.isFeedPostUid,
       createdAt: parentPost.createdAt,
+      updatedAt: _.isUndefinedOr(_.isDateOrAnISODateString),
+      deletedAt: _.isUndefinedOr(_.isDateOrAnISODateString),
+      deletedByPoster: _.isUndefinedOr(_.isBoolean),
       visibleTo: 0,
       maxVisibleTo: parentPost.maxVisibleTo,
       feedOrganizationApikey,
@@ -84,6 +101,7 @@ definePattern(
       lastPublishingOrganizationApikey: parentPost.posterOrganizationApikey,
       lastPublishedAt: parentPost.createdAt,
       posterOrganizationApikey: undefined,
+      '...': 1,
     });
   },
 );
@@ -114,7 +132,18 @@ definePattern(
     expect(parentPost).to.be.anOrganizationForumFeedPost();
     expect(publishedPost.uid).to.not.equal(parentPost.uid);
     expect(publishedPost).matchPattern({
-      ...parentPost,
+      feedPostContentUid: parentPost.feedPostContentUid,
+      initUid: parentPost.initUid,
+      initCreatedAt: parentPost.initCreatedAt,
+      initPosterUserDid: parentPost.initPosterUserDid,
+      initFeedOrganizationApikey: parentPost.initFeedOrganizationApikey,
+      initPosterOrganizationApikey: parentPost.initPosterOrganizationApikey,
+      contentCreatedAt: parentPost.contentCreatedAt,
+      feedUserDid: parentPost.feedUserDid,
+      initFeedUserDid: parentPost.initFeedUserDid,
+      title: parentPost.title,
+      body: parentPost.body,
+
       uid: _.isFeedPostUid,
       parentUid: parentPost.uid,
       visibleTo: _.isIncludedIn([1,2,3]),
@@ -129,6 +158,7 @@ definePattern(
       feedOrganizationApikey: parentPost.feedOrganizationApikey,
       posterUserDid: _.isDID,
       posterOrganizationApikey: parentPost.feedOrganizationApikey,
+      '...': 1,
     });
   },
 );
