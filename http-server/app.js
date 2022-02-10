@@ -7,23 +7,12 @@
 const express = require('express');
 const compression = require('compression');
 const bodyParser = require('body-parser');
-const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 const errorHandler = require('errorhandler');
 const logger = require('../logger')('express');
 
 // Setup server
 const app = express();
-
-app.use(
-  morgan('tiny', {
-    stream: {
-      write: function(message){
-        logger.info(message.toString().replace(/\n+$/,''));
-      }
-    }
-  })
-);
 
 app.use(compression());
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: false }));
@@ -35,8 +24,14 @@ app.use(function(req, res, next) {
 
   req.id = Math.random().toString().split('.')[1];
   req.context = {};
-  req.context.logger = logger.prefix(req.id);
-  req.context.logger.debug(`REQUEST START ${req.method} ${req.url}`, req.query, req.body);
+  req.context.logger = logger.ctx('http-request', {requestId: req.id});
+  req.context.logger.info(`${req.method.toUpperCase()} ${req.url} ${trucJSON(req.query || req.body)}`);
+  req.context.logger.debug({
+    method: req.method,
+    url: req.url,
+    query: req.query,
+    body: trucJSON(req.query || req.body),
+  });
 
   res.renderUnauthorizedError = function() {
     const unauthorizedError = new Error('unauthorized');
@@ -51,7 +46,6 @@ app.use(function(req, res, next) {
   })(res.json);
 
   res.renderError = function(error) {
-    logger.error('RENDERING ERROR', error);
     const errorAsString = typeof error === 'string' ? error : error.message;
     res.status(error.status || 200);
     res.json({
@@ -80,10 +74,16 @@ app.use(function(req, res, next) {
   res.on('finish', function() {
     const { method, url, query, body } = req;
     const { statusCode } = res;
-    req.context.logger.debug('REQUEST END', {
+    const desc = {
       req: { method, url, query, body: trucJSON(body) },
       res: { statusCode, json: trucJSON(res._responseJSON) },
-    });
+    };
+    if (statusCode >= 400){
+      req.context.logger.error(`FAILED statusCode=${statusCode}`, desc);
+    }else{
+      req.context.logger.info(`completed statusCode=${statusCode}`);
+      req.context.logger.debug(desc);
+    }
   });
 
   if (req.method === 'OPTIONS'){

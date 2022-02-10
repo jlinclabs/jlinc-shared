@@ -29,13 +29,13 @@
     "sinon-chai": "^3.0.0"
   },
   "dependencies": {
-    "app-root-path": "^3.0.0",
     "body": "^5.1.0",
     "chai": "^4.3.4",
     "chai-as-promised": "^7.1.1",
     "chai-http": "^4.0.0",
     "chai-match-pattern": "^1.2.0",
     "chai-string": "^1.4.0",
+    "colors": "^1.4.0",
     "compression": "^1.5.2",
     "cookie": "^0.4.1",
     "cookie-parser": "^1.4.3",
@@ -53,7 +53,7 @@
     "require-all": "^3.0.0",
     "sodium": "^3.0.2",
     "urlsafe-base64": "^1.0.0",
-    "winston": "^2.4.1"
+    "winston": "^3.5.1"
   },
   "bin": {
     "lint-queries-and-commands": "./lintQueriesAndCommands.js",

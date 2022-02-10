@@ -18,18 +18,10 @@ module.exports = function requireDirectoryOfFunction(module){
     module.exports[name] = function(options = {}){
       if (!(options.logger instanceof Logger))
         throw new Error(`${loggerPrefix} requires logger`);
-      const logger = options.logger.prefix(loggerPrefix);
-      let thenable;
-      try{
-        thenable = action({ ...options, logger });
-      }catch(error){
-        logger.error(error);
-        return Promise.reject(error);
-      }
-      return Promise.resolve(thenable).catch(error => {
-        logger.error(error);
-        throw error;
-      });
+      const logger = options.logger.ctx(loggerPrefix);
+      return new Promise((resolve, reject) =>
+        Promise.resolve(action({ ...options, logger })).then(resolve, reject)
+      );
     };
   });
 };

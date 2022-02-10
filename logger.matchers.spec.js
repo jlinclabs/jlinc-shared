@@ -11,8 +11,8 @@ describe('logger.matchers', function(){
     'anInstanceOfLogger',
     [
       logger,
-      logger.prefix('whatever'),
-      logger.prefix('a').prefix('b').prefix('c'),
+      logger.ctx('whatever'),
+      logger.ctx('a').ctx('b').ctx('c'),
     ],
     [
       console,
