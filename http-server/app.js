@@ -7,6 +7,7 @@
 const express = require('express');
 const compression = require('compression');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const errorHandler = require('errorhandler');
 const logger = require('../logger')('express');
@@ -15,6 +16,7 @@ const logger = require('../logger')('express');
 const app = express();
 
 app.use(compression());
+app.use(cors());
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: false }));
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(cookieParser());
@@ -59,17 +61,6 @@ app.use(function(req, res, next) {
       Object.assign(json, {success: true})
     );
   };
-
-  if (req.method === 'OPTIONS'){
-    res.header('Cache-Control', 'private, max-age=31536000');
-  }else{
-    res.header('Cache-Control', 'no-cache, no-store, must-revalidate');
-  }
-
-  res.header('Access-Control-Allow-Origin', req.get('origin'));
-  res.header('Access-Control-Allow-Headers', 'Accept, content-type, Session-Id');
-  res.header('Access-Control-Max-Age', '86400');
-  // res.header('Access-Control-Allow-Credentials', 'true');
 
   res.on('finish', function() {
     const { method, url, query, body } = req;
