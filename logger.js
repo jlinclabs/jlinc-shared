@@ -5,7 +5,7 @@ const util = require('util');
 const Path = require('path');
 const winston = require('winston');
 const colors = require('colors/safe');
-const { MESSAGE } = require('triple-beam');
+const { LEVEL, MESSAGE } = require('triple-beam');
 
 const NODE_ENV = process.env.NODE_ENV || 'development';
 const APP_LOG_NAME = process.env.APP_LOG_NAME;
@@ -47,10 +47,19 @@ const jsonFormat = format.combine(
   })(),
   format.json(),
   format(info => {
-    if (info[MESSAGE].length > MAX_LINES) console.trace('LOG TOO BIG!', info);
+    if (
+      LEVELS.indexOf(info[LEVEL]) < LEVELS.indexOf('debug') &&
+      info[MESSAGE].length > MAX_LINES
+    ) console.trace('LOG TOO BIG!');
     return info;
   })(),
 );
+
+const indent = (string, max = MAX_LINES) => string
+  .split('\n')
+  .slice(0, max)
+  .map(l => `  ${l}`)
+  .join('\n');
 
 const consoleFormat = format.combine(
   format.colorize(),
@@ -61,12 +70,7 @@ const consoleFormat = format.combine(
     if (typeof message !== 'string') message = inspect(message);
     message = message.replace(/[\s\n]+$/, '');
     message = message.includes('\n')
-      ? ('\n' + message
-        .split('\n')
-        .slice(0, MAX_LINES) // max lines
-        .map(l => `  ${l}`) // indent
-        .join('\n')
-      )
+      ? '\n' + indent(message)
       : ' ' + message
     ;
     return (
@@ -162,9 +166,19 @@ Object.defineProperty(module.exports, 'logger', {
   }
 });
 
+function humanizeJsonLog(json){
+  const info = JSON.parse(json);
+  info[LEVEL] = info.level;
+  const formatted = consoleFormat.transform(info);
+  return (
+    colors.bold(colors.red(info.app)) + ' ' + formatted[MESSAGE]
+  );
+}
+
 Object.assign(module.exports, {
+  indent,
   jsonFormat,
-  consoleFormat,
+  humanizeJsonLog,
   createLogger,
   Logger,
 });
