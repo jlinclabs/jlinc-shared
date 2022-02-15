@@ -57,6 +57,7 @@
   },
   "bin": {
     "lint-queries-and-commands": "./lintQueriesAndCommands.js",
-    "jlinc-generate": "./generate/index.js"
+    "jlinc-generate": "./generate/index.js",
+    "humanize-json-logs": "./humanizeJsonLogs.js"
   }
 }
