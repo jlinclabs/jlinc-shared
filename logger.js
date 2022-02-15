@@ -23,8 +23,6 @@ const { transports, format } = winston;
 const inspect = (object, opts = {}) =>
   util.inspect(object, { colors: true, depth: Infinity, ...opts });
 
-const indent = string => string.split('\n').map(l => `  ${l}`).join('\n');
-
 const errorToObject = error => (
   error instanceof Error
   ? {
@@ -35,12 +33,15 @@ const errorToObject = error => (
   : error
 );
 
+const cleanMessage = message => {
+  if (!Array.isArray(message)) message = [message];
+  return message.map(errorToObject);
+};
+
 const jsonFormat = format.combine(
   format.timestamp(),
   format(({ message, ...info }) => {
-    if (!Array.isArray(message)) message = [message];
-    message = message.map(errorToObject);
-    return { ...info, message };
+    return { ...info, message: cleanMessage(message) };
   })(),
   format.json(),
 );
@@ -79,14 +80,24 @@ function createLogger(name){
       format.colorize(),
       format.timestamp(),
       format.printf(({ trace, level, context, message }) => {
-        if (Array.isArray(message) && message.length === 1) message = message[0];
+        message = cleanMessage(message);
+        if (message.length === 1) message = message[0];
         if (typeof message !== 'string') message = inspect(message);
         message = message.replace(/[\s\n]+$/, '');
+        message = message.includes('\n')
+          ? ('\n' + message
+            .split('\n')
+            .slice(0, 1000) // max lines
+            .map(l => `  ${l}`) // indent
+            .join('\n')
+          )
+          : ' ' + message
+        ;
         return (
           `${level} ` +
           `${colors.bold(colors.blue(trace))} ` +
           `${colors.grey(inspect(context, { compact: true, colors: false }))}` +
-          (message.includes('\n') ? (`\n` + indent(message)) : (` ` + message))
+          `${colors.white(message)}`
         );
       }),
     ),
