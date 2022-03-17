@@ -189,6 +189,8 @@ Object.defineProperty(module.exports, 'logger', {
 function humanizeJsonLog(json){
   const info = JSON.parse(json);
   info[LEVEL] = info.level;
+  if (typeof info.message === 'string')
+    try{ info.message = JSON.parse(info.message) }catch(e){ /* ignore */ }
   const formatted = consoleFormat.transform(info);
   return (
     colors.bold(colors.red(info.app)) + ' ' + formatted[MESSAGE]
