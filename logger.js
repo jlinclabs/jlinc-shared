@@ -3,6 +3,7 @@
 
 const util = require('util');
 const Path = require('path');
+const jsonStringify = require('safe-stable-stringify');
 const winston = require('winston');
 const colors = require('colors/safe');
 const { LEVEL, MESSAGE } = require('triple-beam');
@@ -17,7 +18,8 @@ const LOG_TO_CONSOLE = !!(
   !['0', 'false'].includes(process.env.LOG_TO_CONSOLE)
 );
 
-const MAX_LINES = 10 * 1000;
+const MAX_LENGTH = 10 * 1000;
+const MAX_LINES = 1000;
 const LEVELS = 'error warn info http verbose debug silly'.split(' ');
 
 const { transports, format } = winston;
@@ -42,17 +44,17 @@ const cleanMessage = message => {
 
 const jsonFormat = format.combine(
   format.timestamp(),
-  format(({ message, ...info }) => {
-    return { ...info, message: cleanMessage(message) };
+  format(({ message, stackTrace, ...info }) => {
+    message = jsonStringify(cleanMessage(message));
+    if (message.length > MAX_LENGTH)
+      message = jsonStringify({
+        error: `LOG LINE TOO BIG`,
+        stack: stackTrace,
+        head: message.slice(0, 255),
+      });
+    return { ...info, message };
   })(),
   format.json(),
-  format(info => {
-    if (
-      LEVELS.indexOf(info[LEVEL]) < LEVELS.indexOf('debug') &&
-      info[MESSAGE].length > MAX_LINES
-    ) console.trace('LOG TOO BIG!');
-    return info;
-  })(),
 );
 
 const indent = (string, max = MAX_LINES) => string
@@ -64,11 +66,15 @@ const indent = (string, max = MAX_LINES) => string
 const consoleFormat = format.combine(
   format.colorize(),
   format.timestamp(),
-  format.printf(({ trace, level, context, message }) => {
+  format.printf(({ trace, level, context, message, stackTrace }) => {
     message = cleanMessage(message);
     if (message.length === 1) message = message[0];
     if (typeof message !== 'string') message = inspect(message);
     message = message.replace(/[\s\n]+$/, '');
+    if (message.length > MAX_LENGTH){
+      const suffix = '\nLOG LINE TOO BIG. from:\n' + stackTrace;
+      message = message.slice(0, MAX_LENGTH - suffix.length) + suffix;
+    }
     message = message.includes('\n')
       ? '\n' + indent(message)
       : ' ' + message
@@ -83,7 +89,8 @@ const consoleFormat = format.combine(
 );
 
 function createLogger(name){
-  const LOGS_PATH = Path.resolve(require('./projectRootPath'), `logs`);
+  const projectPath = require('./projectRootPath');
+  const logsPath = Path.resolve(projectPath, 'logs');
 
   const logger = winston.createLogger({
     level: LOG_LEVEL,
@@ -96,7 +103,7 @@ function createLogger(name){
     transports: [
       new transports.File({
         level: LOG_LEVEL,
-        dirname: LOGS_PATH,
+        dirname: logsPath,
         filename: name ? `${NODE_ENV}.${name}.log` : `${NODE_ENV}.log`,
         format: jsonFormat,
         options: process.env.NODE_ENV === 'test'
@@ -118,12 +125,12 @@ function createLogger(name){
     stderrLevels: LEVELS,
   }));
 
-  return new Logger(logger, name ? [name] : [], {});
+  return new Logger(logger, name ? [name] : [], {}, projectPath);
 }
 
 class Logger {
-  constructor(winstonLogger, trace, context = {}){
-    Object.assign(this, { winstonLogger, trace, context });
+  constructor(winstonLogger, trace, context = {}, projectPath){
+    Object.assign(this, { winstonLogger, trace, context, projectPath });
   }
 
   ctx(name, context){
@@ -131,11 +138,23 @@ class Logger {
     if (typeof name === 'object') { context = name; name = undefined; }
     const trace = [...this.trace];
     if (name) trace.push(name);
-    return new Logger(this.winstonLogger, trace, {...this.context, ...context});
+    return new Logger(this.winstonLogger, trace, {...this.context, ...context}, this.projectPath);
   }
 
   traceString(){
     return this.trace.filter(x => x).join('→');
+  }
+
+  getStackTrace(){
+    return (new Error)
+      .stack
+      .split('\n')
+      .filter(line =>
+        !line.includes('node_modules') &&
+        line.includes(this.projectPath)
+      )
+      .map(x => x.trim())
+      .join('\n');
   }
 
   toString(){
@@ -150,6 +169,7 @@ class Logger {
 LEVELS.forEach(method => {
   Logger.prototype[method] = function(...args){
     this.winstonLogger[method]({
+      stackTrace: this.getStackTrace(),
       context: this.context,
       trace: this.traceString(),
       message: args,
