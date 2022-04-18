@@ -1,4 +1,6 @@
 'use strict';
+
+const isDataYogi = require('./isDataYogi');
 /*
   PNFO - Public Name For Organization
 
@@ -10,11 +12,14 @@
     - node
     - circle
     - group
+    - hub
+    - connection
 
   So we've made it a variable
 */
 
-module.exports = Object.freeze({
-  singular: 'Hub',
-  plural: 'Hubs',
-});
+module.exports = Object.freeze(
+  isDataYogi
+    ? { singular: 'Connection', plural: 'Connections' }
+    : { singular: 'Hub', plural: 'Hubs' }
+);
