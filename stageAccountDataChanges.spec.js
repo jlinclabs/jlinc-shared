@@ -1,6 +1,5 @@
 'use strict';
 
-const deepfreeze = require('deep-freeze-node');
 const PERSONAL_DATA_KEYS = require('./personal_data_keys');
 const CONSENTS = require('./consents');
 const COMMUNICATION_CHANNELS = require('./communication_channels');
@@ -12,13 +11,13 @@ const arrayToObjectWithValue = (keys, value) =>
   keys.reduce((result, key) => ({...result, [key]: value}), {})
 ;
 
-const ALL_REQUESTED_DATA = deepfreeze({
+const ALL_REQUESTED_DATA = {
   personal_data: arrayToObjectWithValue(PERSONAL_DATA_KEYS, true),
   consents: arrayToObjectWithValue(CONSENTS, true),
   communication_channels: arrayToObjectWithValue(COMMUNICATION_CHANNELS, true),
-});
+};
 
-const SOME_REQUESTED_DATA = deepfreeze({
+const SOME_REQUESTED_DATA = {
   personal_data: {
     email: true,
     firstname: true,
@@ -32,7 +31,7 @@ const SOME_REQUESTED_DATA = deepfreeze({
     'email_media': true,
     'fax_media': true,
   },
-});
+};
 
 describe('stageAccountDataChanges', function(){
 

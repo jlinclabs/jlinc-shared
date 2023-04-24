@@ -1,6 +1,5 @@
 'use strict';
 
-const deepfreeze = require('deep-freeze-node');
 const mergeAccountData = require('../../mergeAccountData');
 const diffAccountData = require('../../diffAccountData');
 
@@ -10,7 +9,7 @@ describe('managing account data', function(){
     expect(mergeAccountData({},{})).to.deep.equal({});
     expect(diffAccountData({},{})).to.be.undefined;
 
-    const currentAccountData = deepfreeze({
+    const currentAccountData = {
       shared_personal_data: {
         email: true,
         firstname: true,
@@ -29,9 +28,9 @@ describe('managing account data', function(){
         email_media: { enabled: true },
         fax_media: { enabled: true },
       },
-    });
+    };
 
-    const changes = deepfreeze({
+    const changes = {
       shared_personal_data: {
         lastname: false,
         salutation: true,
@@ -48,9 +47,9 @@ describe('managing account data', function(){
         fax_media: { enabled: false },
         postal_mail_media: { enabled: true },
       },
-    });
+    };
 
-    const newAccountData = deepfreeze({
+    const newAccountData = {
       shared_personal_data: {
         email: true,
         firstname: true,
@@ -73,7 +72,7 @@ describe('managing account data', function(){
         fax_media: { enabled: false },
         postal_mail_media: { enabled: true },
       },
-    });
+    };
 
     expect( mergeAccountData(currentAccountData, changes) ).to.deep.equal(newAccountData);
     expect( diffAccountData(currentAccountData, newAccountData) ).to.deep.equal(changes);

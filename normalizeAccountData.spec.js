@@ -1,9 +1,8 @@
 'use strict';
 
-const deepfreeze = require('deep-freeze-node');
 const normalizeAccountData = require('./normalizeAccountData');
 
-const NORMALIZED_EMPTY_ACCOUNT_DATA = deepfreeze({
+const NORMALIZED_EMPTY_ACCOUNT_DATA = {
   shared_personal_data: {
     email: false,
     firstname: false,
@@ -97,7 +96,7 @@ const NORMALIZED_EMPTY_ACCOUNT_DATA = deepfreeze({
     instagram: { enabled: false },
     facebook: { enabled: false },
   },
-});
+};
 
 describe('normalizeAccountData', function(){
   it('should make any implicit values, explicit', function(){
