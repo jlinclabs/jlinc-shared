@@ -3,10 +3,6 @@
   "private": true,
   "version": "1.0.0",
   "description": "A place to store things shared by:",
-  "engines": {
-    "node": "^12.16.3",
-    "npm": "^6.2.0"
-  },
   "scripts": {
     "test": "./scripts/test"
   },
