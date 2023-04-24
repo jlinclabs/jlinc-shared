@@ -1,3 +1,3 @@
 'use strict';
 
-module.exports = process.env.DATAYOGI === '1'
+module.exports = process.env.DATAYOGI === '1';
