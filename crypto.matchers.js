@@ -1,6 +1,7 @@
 'use strict';
 
 const { signString, verifySignedString } = require('./crypto.js');
+
 const { expect, definePattern } = require('./test/matchers');
 
 definePattern('aPublicKey', /.+/);

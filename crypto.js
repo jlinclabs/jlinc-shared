@@ -1,36 +1,42 @@
 'use strict';
 
-const sodium = require('sodium').api;
+const sodium = require('sodium-native');
 const b64 = require('urlsafe-base64');
 
 function createSecret(length = sodium.crypto_secretbox_NONCEBYTES){
   if (typeof length !== 'number')
     throw new Error('length must be of type number');
   const buffer = Buffer.alloc(length);
-  sodium.randombytes(buffer, length);
+  sodium.randombytes_buf(buffer);
   return b64.encode(buffer);
 }
 
 function createCrypto(encodedKey){
   const key = b64.decode(encodedKey);
 
-  function encrypt(item, secret){
-    return b64.encode(
-      sodium.crypto_secretbox(
-        b64.decode(item),
-        b64.decode(secret),
-        key,
-      )
-    );
-  }
-
-  function decrypt(encryptedItem, secret){
-    const buffer = sodium.crypto_secretbox_open(
-      b64.decode(encryptedItem),
+  function encrypt(message, secret){
+    message = b64.decode(message);
+    const ciphertext = Buffer.alloc(message.length + sodium.crypto_secretbox_MACBYTES);
+    sodium.crypto_secretbox_easy(
+      ciphertext,
+      message,
       b64.decode(secret),
       key,
     );
-    return buffer ? b64.encode(buffer) : undefined;
+    const fixed = Buffer.concat([Buffer.alloc(sodium.crypto_secretbox_MACBYTES), ciphertext]);
+    return b64.encode(fixed);
+  }
+
+  function decrypt(ciphertext, secret){
+    ciphertext = b64.decode(ciphertext).slice(sodium.crypto_secretbox_MACBYTES);
+    const decrypted = Buffer.alloc(ciphertext.length - sodium.crypto_secretbox_MACBYTES);
+    const good = sodium.crypto_secretbox_open_easy(
+      decrypted,
+      ciphertext,
+      b64.decode(secret),
+      key,
+    );
+    if (good) return b64.encode(decrypted);
   }
 
   function encryptString(string, secret){
@@ -50,17 +56,24 @@ function createCrypto(encodedKey){
 };
 
 function signString(stringToSign, privateKey){
-  return sodium.crypto_sign(
-    Buffer.from(stringToSign, 'utf8'),
+  const bufferToSign = Buffer.from(stringToSign, 'utf8');
+  const signature = Buffer.alloc(bufferToSign.length + sodium.crypto_sign_BYTES);
+  sodium.crypto_sign(
+    signature,
+    bufferToSign,
     b64.decode(privateKey),
   );
+  return signature;
 }
 
 function verifySignedString(signature, publicKey){
-  return sodium.crypto_sign_open(
+  const message = Buffer.alloc(signature.length - sodium.crypto_sign_BYTES);
+  const good = sodium.crypto_sign_open(
+    message,
     signature,
     b64.decode(publicKey)
-  ).toString();
+  );
+  return good ? message.toString() : null;
 }
 
 module.exports = {

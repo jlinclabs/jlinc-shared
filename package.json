@@ -46,6 +46,7 @@
     "request": "^2.88.0",
     "request-promise": "^4.2.2",
     "require-all": "^3.0.0",
+    "sodium-native": "^4.0.1",
     "urlsafe-base64": "^1.0.0",
     "winston": "^3.5.1"
   },

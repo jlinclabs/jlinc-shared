@@ -53,7 +53,6 @@ describe('crypto', function() {
 
         const encryptedMessage = encrypt(encodedMessage, secret);
         expect(encryptedMessage).to.equal('AAAAAAAAAAAAAAAAAAAAAL4mdVgMsJxLxWtpmSxlxZy9DR9JKECC2IxjFfJfWb_baiVau5rvOJpiAA');
-        expect(encryptedMessage).to.be.a('string');
         expect(encryptedMessage).to.not.equal(message);
         expect(decrypt(encryptedMessage, createSecret())).to.be.undefined;
 
@@ -124,6 +123,7 @@ describe('crypto', function() {
     it('should sign and verify', function(){
       const signature = signString(`hello world`, privateKey);
       expect(verifySignedString(signature, publicKey)).to.equal(`hello world`);
+
     });
     it('static signatures', function(){
       for (const [signatureHex, value] of [
