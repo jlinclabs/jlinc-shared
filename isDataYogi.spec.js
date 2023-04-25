@@ -1,5 +1,5 @@
 'use strict';
 
-describe('isLegalEntity', function(){
+describe('isDataYogi', function(){
   it('should have tests');
 });
