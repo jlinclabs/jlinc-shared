@@ -5,6 +5,8 @@ const b64 = require('urlsafe-base64');
 const {
   createSecret,
   createCrypto,
+  signString,
+  verifySignedString,
 } = require('./crypto');
 
 describe('crypto', function() {
@@ -76,7 +78,6 @@ describe('crypto', function() {
         expect(JSON.parse(decryptedJson)).to.deep.equal(data);
       });
 
-
       it('static encrypted values', function(){
         const secret = 'nsQigp8iCpTvb_RH9eZcCJdhLGBgQu3h';
         expect(
@@ -117,4 +118,21 @@ describe('crypto', function() {
 
   });
 
+  describe('signString and verifySignedString', function() {
+    const publicKey = 'sPn-epr17DsTMRtvJi4Ol-m0LhaqacaOCfM4H55Wn0M';
+    const privateKey = '7rI5Nu3lCE_Ewwn62Q0JwSTaxUGKTCpYRVRQzl08Rkqw-f56mvXsOxMxG28mLg6X6bQuFqppxo4J8zgfnlafQw';
+    it('should sign and verify', function(){
+      const signature = signString(`hello world`, privateKey);
+      expect(verifySignedString(signature, publicKey)).to.equal(`hello world`);
+    });
+    it('static signatures', function(){
+      for (const [signatureHex, value] of [
+        ['aa02c0c9de7b2b3434f8192037c879cb9bc13694b1f55cddc3c405d67d846ccbbcbe1499bd72c638712b1d4239f2578afa6f74659b9275cd54fc42b2bf14220567726173732074617374657320626164', `grass tastes bad`],
+        ['a80f43d9976600073446459e50b0a01b74b05d0eb8745df4575178be2f6842fe4aae94750ba6d692f3786b864555df20aa7b5687ae36d1f46e3aae19f3a07608686f772064696420492067657420686572653f', `how did I get here?`],
+      ]){
+        const signature = Buffer.from(signatureHex, 'hex');
+        expect(verifySignedString(signature, publicKey)).to.equal(value);
+      }
+    });
+  });
 });

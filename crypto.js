@@ -49,7 +49,23 @@ function createCrypto(encodedKey){
   };
 };
 
+function signString(stringToSign, privateKey){
+  return sodium.crypto_sign(
+    Buffer.from(stringToSign, 'utf8'),
+    b64.decode(privateKey),
+  );
+}
+
+function verifySignedString(signature, publicKey){
+  return sodium.crypto_sign_open(
+    signature,
+    b64.decode(publicKey)
+  ).toString();
+}
+
 module.exports = {
   createSecret,
   createCrypto,
+  signString,
+  verifySignedString,
 };
